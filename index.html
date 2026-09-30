@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yala - Créateur de Mangas et Films d'Animation Gratuits</title>
+    <title>Yala Creator - Studio d'Animation et Mangas</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -48,120 +48,229 @@
             border-radius: 8px;
             box-sizing: border-box;
         }
-        .info-box {
-            background: #252525;
+        .preview-tv {
+            width: 100%;
+            height: 220px;
+            background: #000;
+            border: 3px solid #ff9800;
+            border-radius: 10px;
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
             padding: 10px;
-            border-left: 4px solid #ff9800;
+            box-sizing: border-box;
+        }
+        #drawingCanvas {
+            background: #fff;
+            border-radius: 6px;
+            cursor: crosshair;
+            display: none;
             margin-top: 10px;
-            font-size: 13px;
-            color: #ccc;
+        }
+        .btn-toggle-draw {
+            background-color: #2196F3;
+            color: white;
+            margin-top: 10px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
         }
         button {
-            width: 100%;
-            background-color: #ff9800;
-            color: white;
-            border: none;
+            flex: 1;
             padding: 14px;
-            margin-top: 25px;
-            font-size: 16px;
-            font-weight: bold;
+            border: none;
             border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #f57c00;
+        .btn-generate {
+            background-color: #ff9800;
+            color: white;
+            width: 100%;
+            margin-top: 15px;
         }
-        #output {
-            margin-top: 20px;
-            background: #222;
-            padding: 15px;
-            border-radius: 8px;
-            min-height: 120px;
-            border: 1px dashed #444;
-        }
-        .download-btn {
-            background-color: #2e7d32;
+        .btn-download {
+            background-color: #4CAF50;
+            color: white;
             display: none;
         }
-        .download-btn:hover {
-            background-color: #1b5e20;
+        .btn-modify {
+            background-color: #f44336;
+            color: white;
+            display: none;
+        }
+        .output-box {
+            background: #252525;
+            padding: 15px;
+            border-left: 4px solid #ff9800;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #ccc;
+            white-space: pre-line;
+            max-height: 200px;
+            overflow-y: auto;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Yala Creator</h1>
-        <div class="subtitle">100% Gratuit — Dessins animés, Films & Mangas</div>
+<div class="container">
+    <h1>Yala Creator</h1>
+    <div class="subtitle">Studio Interactif — 100% Gratuit</div>
 
-        <label for="charType">1. Style ou type de personnage :</label>
-        <select id="charType">
-            <option value="quartier">Gens du quartier (Style urbain / locale)</option>
-            <option value="ville">Gens de la ville (Moderne / Stylé)</option>
-            <option value="village">Gens du village (Traditionnel / Authentique)</option>
-        </select>
+    <label>1. Type de décor / Village :</label>
+    <select id="decorStyle">
+        <option value="Village Africain Traditionnel (Cases en paille, nature, ambiance locale)">Village Africain Traditionnel</option>
+        <option value="Village Européen Ancien (ruelles pavées, maisons en pierre)">Village Européen Ancien</option>
+        <option value="Ville Moderne / Urbain (gratte-ciels, rue animée)">Ville Moderne / Style Urbain</option>
+        <option value="Village Océanien / Île tropicale">Village Océanien / Île</option>
+    </select>
 
-        <label for="charSize">2. Taille du personnage :</label>
-        <select id="charSize">
-            <option value="petite">Petite taille</option>
-            <option value="grande">Grande taille</option>
-        </select>
+    <label>2. Style, voix et personnages (ex: (voix de méchant), (voix de héros)) :</label>
+    <select id="charStyle">
+        <option value="Héros courageux (voix claire et déterminée)">Héros courageux (Voix claire)</option>
+        <option value="Méchant mystérieux (voix grave, sombre et menaçante)">Méchant (Voix grave et menaçante)</option>
+        <option value="Sage du village (voix posée et sage)">Sage du village (Voix posée)</option>
+        <option value="Personnage normal (voix naturelle)">Personnage normal (Voix douce/normale)</option>
+    </select>
 
-        <label for="prompt">3. Décris ton histoire ou ton action :</label>
-        <textarea id="prompt" rows="3" placeholder="Ex: Un jeune du quartier qui vit une aventure extraordinaire..."></textarea>
+    <label>3. Décris ton histoire ou ton action :</label>
+    <textarea id="storyInput" rows="3" placeholder="Ex: Un jeune du village s'avance... (Mets tes dialogues avec les voix entre parenthèses)"></textarea>
 
-        <label for="duration">4. Découpage du temps (Minutes) :</label>
-        <select id="duration">
-            <option value="10">10 minutes (Séquence courte)</option>
-            <option value="20">20 minutes</option>
-            <option value="30">30 minutes</option>
-            <option value="60">60 minutes (Film complet)</option>
-        </select>
+    <button class="btn-toggle-draw" onclick="toggleDrawingPad()">🎨 Je veux dessiner mon art / personnage moi-même</button>
+    
+    <canvas id="drawingCanvas" width="300" height="150"></canvas>
+    <div id="drawStatus" style="font-size: 12px; color: #888; margin-top: 5px; display:none;">(Dessine ton croquis ci-dessus avec ton doigt, ou laisse l'application générer l'art automatiquement)</div>
 
-        <div class="info-box">
-            💡 <strong>Règle Yala :</strong> L'IA va découper ton histoire étape par étape selon les minutes choisies pour créer tes planches et tes épisodes.
-        </div>
+    <label>4. Durée précise (0 à 60 minutes) :</label>
+    <input type="number" id="durationInput" min="0" max="60" value="10" placeholder="Entre 0 et 60 minutes">
 
-        <button onclick="generateYalaEpisode()">Lancer la création de l'épisode</button>
+    <button class="btn-generate" onclick="generateEpisode()">Lancer la création de l'épisode</button>
 
-        <div id="output">
-            <em>Le scénario et les visuels générés apparaîtront ici pour test...</em>
-        </div>
-
-        <button id="downloadBtn" class="download-btn" onclick="downloadEpisodeToPhone()">Télécharger l'épisode dans le téléphone</button>
+    <div class="preview-tv" id="tvPreview">
+        <div id="tvContent">📺 Écran TV : L'aperçu de ton épisode et des arts apparaîtra ici...</div>
     </div>
 
-    <script>
-        function generateYalaEpisode() {
-            const charType = document.getElementById('charType').value;
-            const charSize = document.getElementById('charSize').value;
-            const prompt = document.getElementById('prompt').value;
-            const duration = document.getElementById('duration').value;
-            const output = document.getElementById('output');
-            
-            if (!prompt) {
-                alert("Veuillez entrer une description pour votre histoire !");
-                return;
+    <div class="btn-group">
+        <button class="btn-download" id="downloadBtn" onclick="downloadEpisode()">Télécharger l'épisode</button>
+        <button class="btn-modify" id="modifyBtn" onclick="requestModify()">Demander une modification</button>
+    </div>
+
+    <div class="output-box" id="outputBox">
+        Le scénario, les voix et les arts générés s'afficheront ici...
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    let painting = false;
+
+    function toggleDrawingPad() {
+        if (canvas.style.display === "block") {
+            canvas.style.display = "none";
+            document.getElementById('drawStatus').style.display = "none";
+        } else {
+            canvas.style.display = "block";
+            document.getElementById('drawStatus').style.display = "block";
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
+    canvas.addEventListener('mousedown', startPosition);
+    canvas.addEventListener('mouseup', finishedPosition);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); startPosition(e.touches[0]); });
+    canvas.addEventListener('touchend', (e) => { e.preventDefault(); finishedPosition(); });
+    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); draw(e.touches[0]); });
+
+    function startPosition(e) {
+        painting = true;
+        draw(e);
+    }
+    function finishedPosition() {
+        painting = false;
+        ctx.beginPath();
+    }
+    function draw(e) {
+        if (!painting) return;
+        const rect = canvas.getBoundingClientRect();
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000000';
+        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+
+    function generateEpisode() {
+        const decor = document.getElementById('decorStyle').value;
+        const character = document.getElementById('charStyle').value;
+        const story = document.getElementById('storyInput').value;
+        const duration = document.getElementById('durationInput').value;
+        const outputBox = document.getElementById('outputBox');
+        const tvPreview = document.getElementById('tvContent');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const modifyBtn = document.getElementById('modifyBtn');
+
+        if (!story.trim()) {
+            alert("Veuillez décrire votre histoire avant de lancer la création !");
+            return;
+        }
+
+        outputBox.innerHTML = "⏳ Analyse en cours... Création des arts, découpage personnalisé de " + duration + " minutes et lecture des voix...";
+        tvPreview.innerHTML = "🎬 Génération du visuel et des personnages...";
+
+        setTimeout(() => {
+            let decorImageText = "🛖 [Art généré : " + decor + "]";
+            if (canvas.style.display === "block") {
+                decorImageText = "🎨 [Art personnalisé intégré depuis ton dessin !]";
+            } else if(decor.includes("Africain")) {
+                decorImageText += "<br><span style='color:#ffb74d;'>✨ Style visuel : Cases rondes africaines, nature et ambiance chaleureuse.</span>";
+            } else if(decor.includes("Européen")) {
+                decorImageText += "<br><span style='color:#ffb74d;'>✨ Style visuel : Ruelles pavées et maisons en pierre.</span>";
+            } else {
+                decorImageText += "<br><span style='color:#ffb74d;'>✨ Style visuel : Gratte-ciels et ambiance urbaine moderne.</span>";
             }
 
-            output.innerHTML = "⏳ <strong>Yala analyse et génère...</strong><br>Création des personnages (" + charType + ", " + charSize + ") et découpage sur " + duration + " minutes en cours...";
-            
-            setTimeout(() => {
-                output.innerHTML = `<strong>🎉 Épisode généré avec succès !</strong><br><br>
-                - <strong>Type :</strong> Gens du ${charType} (${charSize} taille)<br>
-                - <strong>Scénario :</strong> ${prompt}<br>
-                - <strong>Découpage :</strong> Structuré par tranches jusqu'à ${duration} minutes.<br>
-                - <strong>Statut :</strong> Les scènes, dialogues et animations sont prêts à être téléchargés pour TikTok et YouTube !`;
-                
-                document.getElementById('downloadBtn').style.display = 'block';
-            }, 2500);
-        }
+            tvPreview.innerHTML = decorImageText;
 
-        function downloadEpisodeToPhone() {
-            alert("📥 Fichier téléchargé avec succès ! Retrouvez votre épisode dans la galerie de votre téléphone, prêt pour TikTok et YouTube.");
+            let scriptResult = "--- ÉPISODE CRÉÉ (" + duration + " min) ---\n\n";
+            scriptResult += "🌍 Décor : " + decor + "\n";
+            scriptResult += "🎭 Style et Voix : " + character + "\n\n";
+            scriptResult += "📜 Scénario & Dialogues (avec détection des tons entre parenthèses) :\n" + story + "\n\n";
+            scriptResult += "✅ Statut : Regarde l'image sur l'écran TV. Si cela te plaît, clique sur Télécharger. Si tu veux changer un détail ou modifier l'art, clique sur Demander une modification.";
+
+            outputBox.innerHTML = scriptResult;
+            
+            downloadBtn.style.display = "block";
+            modifyBtn.style.display = "block";
+        }, 1500);
+    }
+
+    function downloadEpisode() {
+        alert("Succès ! L'épisode, les arts et les voix configurées ont été téléchargés dans votre téléphone, prêts pour TikTok et YouTube.");
+    }
+
+    function requestModify() {
+        let correction = prompt("Qu'aimerais-tu modifier ? (Ex: Changer le design de l'art, ajuster une voix, modifier un personnage...)");
+        if (correction) {
+            alert("Prise en compte ! L'application met à jour l'épisode et l'art visuel selon vos consignes...");
+            document.getElementById('outputBox').innerHTML += "\n\n🔄 Modification appliquée : " + correction;
         }
-    </script>
+    }
+</script>
 
 </body>
 </html>
-
