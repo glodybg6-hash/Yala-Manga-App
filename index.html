@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yala Creator - Studio Manga Vidéo</title>
+    <title>Yala Creator - Studio Vidéo Manga 100% Intégré</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -60,10 +59,10 @@
             border-radius: 8px;
             box-sizing: border-box;
         }
-        /* Écran TV / Lecteur Manga Animé */
+        /* Écran TV / Lecteur Vidéo Animé Réel */
         .tv-player {
             width: 100%;
-            height: 250px;
+            height: 260px;
             background: #000;
             border: 4px solid #ff9800;
             border-radius: 12px;
@@ -75,40 +74,11 @@
             justify-content: center;
             text-align: center;
         }
-        .tv-screen-content {
+        #animCanvas {
             width: 100%;
             height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 15px;
-            box-sizing: border-box;
-            position: relative;
-        }
-        .manga-panel {
-            width: 100%;
-            height: 160px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 6px;
-            border: 1px solid #555;
-            display: flex;
-            align-items: flex-end;
-            justify-content: center;
-            position: relative;
-            transition: all 0.5s ease;
-        }
-        .manga-subtitle {
-            background: rgba(0, 0, 0, 0.85);
-            color: #ffeb3b;
-            padding: 6px 12px;
-            font-size: 13px;
-            font-weight: bold;
-            border-radius: 4px;
-            margin-bottom: 8px;
-            max-width: 90%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+            background: #111;
+            object-fit: contain;
         }
         .media-options {
             display: flex;
@@ -126,14 +96,6 @@
             font-weight: bold;
             cursor: pointer;
             text-align: center;
-        }
-        #drawingCanvas {
-            background: #fff;
-            border-radius: 6px;
-            cursor: crosshair;
-            display: none;
-            margin-top: 10px;
-            width: 100%;
         }
         .btn-generate {
             background-color: #ff9800;
@@ -162,6 +124,8 @@
             border-radius: 8px;
             font-weight: bold;
             cursor: pointer;
+            text-align: center;
+            text-decoration: none;
         }
         .status-box {
             background: #1f1f1f;
@@ -194,139 +158,156 @@
     </div>
 
     <h1>Yala Creator</h1>
-    <div class="subtitle">Studio de Manga Animé — Lecture Vidéo Gratuite</div>
+    <div class="subtitle">Studio Manga — Générateur de Vraies Vidéos Animées</div>
 
-    <label>1. Décor / Ambiance :</label>
+    <label>1. Ambiance / Décor :</label>
     <select id="decorStyle">
         <option value="Village Africain Traditionnel">Village Africain Traditionnel</option>
-        <option value="Village Européen Ancien">Village Européen Ancien</option>
+        <option value="Cité Royale de Mapinga">Cité Royale de Mapinga</option>
         <option value="Ville Moderne / Urbain">Ville Moderne / Style Urbain</option>
     </select>
 
     <label>2. Voix et Personnage :</label>
     <select id="charStyle">
-        <option value="Héros courageux (Voix claire et déterminée)">Héros courageux (Voix claire)</option>
-        <option value="Méchant mystérieux (Voix grave et menaçante)">Méchant (Voix grave)</option>
-        <option value="Sage du village (Voix posée)">Sage du village (Voix posée)</option>
+        <option value="Mapinga Kasongo (Voix de roi guerrier)">Mapinga Kasongo (Voix de roi)</option>
+        <option value="Héros courageux (Voix claire)">Héros courageux (Voix claire)</option>
+        <option value="Méchant mystérieux (Voix grave)">Méchant (Voix grave)</option>
     </select>
 
-    <label>3. Ton Histoire et Dialogues :</label>
-    <textarea id="storyInput" rows="3" placeholder="Ex: (Héros) Je ne laisserai pas détruire notre village ! (Méchant) Tu es trop faible..."></textarea>
+    <label>3. Texte de l'histoire et Dialogues :</label>
+    <textarea id="storyInput" rows="3" placeholder="Ex: Le guerrier avance avec l'or dans le sang..."></textarea>
 
-    <label>4. Image ou Vidéo de l'épisode :</label>
+    <label>4. Importer l'image de ton Manga (ex: ton personnage) :</label>
     <div class="media-options">
-        <button class="btn-option" onclick="toggleDrawingPad()">🎨 Dessiner</button>
-        <button class="btn-option" style="background-color: #9c27b0;" onclick="document.getElementById('mediaUpload').click()">📁 Importer média</button>
+        <button class="btn-option" style="background-color: #9c27b0;" onclick="document.getElementById('mediaUpload').click()">📁 Choisir l'image principale</button>
     </div>
-    <input type="file" id="mediaUpload" accept="image/*,video/*" style="display:none;" onchange="handleMediaUpload(event)">
-    <canvas id="drawingCanvas" width="300" height="150"></canvas>
+    <input type="file" id="mediaUpload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
 
-    <label>5. Durée de l'épisode (minutes) :</label>
-    <input type="number" id="durationInput" min="1" max="60" value="10">
+    <label>5. Durée de la vidéo (secondes) :</label>
+    <input type="number" id="durationInput" min="3" max="30" value="6">
 
-    <button class="btn-generate" onclick="launchMangaPlayer()">▶️ Lancer la Lecture Animée sur la TV</button>
+    <button class="btn-generate" onclick="startVideoGeneration()">🎬 Créer et Enregistrer la Vraie Vidéo</button>
 
-    <!-- Écran TV Interactif -->
+    <!-- Écran TV / Canevas Animé & Vidéo -->
     <div class="tv-player" id="tvPlayerBox">
-        <div class="tv-screen-content" id="tvScreen">
-            <span style="font-size: 14px; color: #ff9800;">📺 Télévision Yala Prête</span>
-            <p style="font-size: 12px; color: #777; margin-top: 5px;">Clique sur "Lancer la Lecture" pour voir le manga s'animer avec les voix et les sous-titres.</p>
-        </div>
+        <canvas id="animCanvas" width="600" height="350"></canvas>
     </div>
 
     <div class="btn-group">
-        <button class="btn-download" id="downloadVideoBtn" onclick="downloadVideoFile()">📥 Télécharger la Vidéo (.mp4)</button>
+        <a id="downloadVideoBtn" class="btn-download" style="display:none;" download="Yala_Manga_Episode.webm">📥 Télécharger la Vraie Vidéo (.webm)</a>
     </div>
 
     <div class="status-box" id="statusBox">
-        Statut : En attente de création de l'épisode...
+        Statut : Prêt à générer la vidéo animée de ton manga.
     </div>
 </div>
 
 <script>
-    const canvas = document.getElementById('drawingCanvas');
+    const canvas = document.getElementById('animCanvas');
     const ctx = canvas.getContext('2d');
-    let painting = false;
-    let customUserMedia = null;
+    let uploadedImage = null;
+    let mediaRecorder;
+    let recordedChunks = [];
 
-    function toggleDrawingPad() {
-        if (canvas.style.display === "block") {
-            canvas.style.display = "none";
-        } else {
-            canvas.style.display = "block";
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-    }
+    // Image par défaut si rien n'est chargé
+    let defaultImg = new Image();
+    defaultImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='350' fill='%23222'><rect width='600' height='350'/><text x='300' y='175' fill='%23ff9800' font-size='20' text-anchor='middle'>Charge une image pour animer ta vidéo</text></svg>";
+    defaultImg.onload = () => {
+        ctx.drawImage(defaultImg, 0, 0, canvas.width, canvas.height);
+    };
 
-    function handleMediaUpload(event) {
+    function handleImageUpload(event) {
         const file = event.target.files[0];
         if (file) {
-            const url = URL.createObjectURL(file);
-            if (file.type.startsWith('video/')) {
-                customUserMedia = `<video src="${url}" controls autoplay style="width:100%; height:100%; object-fit:contain;"></video>`;
-            } else {
-                customUserMedia = `<img src="${url}" style="width:100%; height:100%; object-fit:contain;">`;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImage = new Image();
+                uploadedImage.onload = function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+                    document.getElementById('statusBox').innerHTML = "✅ Image chargée avec succès dans le studio !";
+                }
+                uploadedImage.src = e.target.result;
             }
-            document.getElementById('tvScreen').innerHTML = customUserMedia;
-            alert("Média chargé avec succès dans la TV !");
+            reader.readAsDataURL(file);
         }
     }
 
-    // Gestion du dessin tactile
-    canvas.addEventListener('mousedown', (e) => { painting = true; draw(e); });
-    canvas.addEventListener('mouseup', () => { painting = false; ctx.beginPath(); });
-    canvas.addEventListener('mousemove', draw);
-    canvas.addEventListener('touchstart', (e) => { e.preventDefault(); painting = true; draw(e.touches[0]); });
-    canvas.addEventListener('touchend', (e) => { e.preventDefault(); painting = false; ctx.beginPath(); });
-    canvas.addEventListener('touchmove', (e) => { e.preventDefault(); if(painting) draw(e.touches[0]); });
-
-    function draw(e) {
-        if (!painting) return;
-        const rect = canvas.getBoundingClientRect();
-        ctx.lineWidth = 3;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = '#000';
-        ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-    }
-
-    function launchMangaPlayer() {
+    function startVideoGeneration() {
         const story = document.getElementById('storyInput').value;
-        const decor = document.getElementById('decorStyle').value;
-        const voiceType = document.getElementById('charStyle').value;
-        const duration = document.getElementById('durationInput').value;
-        const tvScreen = document.getElementById('tvScreen');
+        const durationSec = parseInt(document.getElementById('durationInput').value) || 6;
         const statusBox = document.getElementById('statusBox');
         const downloadBtn = document.getElementById('downloadVideoBtn');
 
-        if (!story.trim() && !customUserMedia) {
-            alert("Veuillez entrer une histoire ou importer un média pour lancer l'animation !");
-            return;
+        statusBox.innerHTML = "⏳ Enregistrement de la vraie vidéo en cours (Zoom et animation)... Patientez...";
+        downloadBtn.style.display = "none";
+
+        // Capture du flux vidéo directement depuis le canvas de la TV
+        const stream = canvas.captureStream(30); // 30 images par seconde
+        recordedChunks = [];
+        
+        try {
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+        } catch (e) {
+            mediaRecorder = new MediaRecorder(stream); // Fallback automatique
         }
 
-        statusBox.innerHTML = "⏳ Génération de l'animation, synchronisation des voix et des musiques en cours...";
-
-        setTimeout(() => {
-            if (!customUserMedia) {
-                // Simulation d'une lecture vidéo manga animée avec sous-titres dynamiques
-                tvScreen.innerHTML = `
-                    <div class="manga-panel" style="background: linear-gradient(135deg, #222, #444);">
-                        <div style="position: absolute; top: 10px; left: 10px; background: rgba(255,152,0,0.8); color: #000; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 3px;">DIRECT - ${duration} min</div>
-                        <div class="manga-subtitle">🔊 [${voiceType}] : "${story.substring(0, 50)}..."</div>
-                    </div>
-                `;
+        mediaRecorder.ondataavailable = function(event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
             }
+        };
 
-            statusBox.innerHTML = `✅ Épisode prêt ! Lecture en cours sur la TV (Décor : ${decor}). Le fichier vidéo avec sons et voix est prêt au téléchargement.`;
+        mediaRecorder.onstop = function() {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const videoUrl = URL.createObjectURL(blob);
+            downloadBtn.href = videoUrl;
             downloadBtn.style.display = "block";
-        }, 1500);
-    }
+            statusBox.innerHTML = "✅ Vraie vidéo générée avec succès ! Clique sur le bouton vert pour la télécharger.";
+        };
 
-    function downloadVideoFile() {
-        alert("📥 Téléchargement de la vidéo de l'épisode (.mp4 avec sons et voix) démarré sur votre téléphone !");
+        mediaRecorder.start();
+
+        // Animation dynamique sur le canvas (Effet de zoom + sous-titre qui bouge)
+        let startTime = null;
+        let imgToDraw = uploadedImage || defaultImg;
+
+        function animateFrame(timestamp) {
+            if (!startTime) startTime = timestamp;
+            let elapsed = (timestamp - startTime) / 1000; // en secondes
+
+            if (elapsed < durationSec) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Effet de zoom progressif (caméra dynamique) sur l'image
+                let scale = 1 + (elapsed * 0.03);
+                let w = canvas.width * scale;
+                let h = canvas.height * scale;
+                let x = (canvas.width - w) / 2;
+                let y = (canvas.height - h) / 2;
+
+                ctx.save();
+                ctx.drawImage(imgToDraw, x, y, w, h);
+                ctx.restore();
+
+                // Bandeau noir style cinéma en bas
+                ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
+                ctx.fillRect(0, canvas.height - 60, canvas.width, 60);
+
+                // Texte de l'histoire / sous-titre animé
+                ctx.fillStyle = "#ffeb3b";
+                ctx.font = "bold 15px Arial";
+                ctx.textAlign = "center";
+                let displayText = story ? story : "Épisode Manga - Yala Creator";
+                ctx.fillText(displayText, canvas.width / 2, canvas.height - 25);
+
+                requestAnimationFrame(animateFrame);
+            } else {
+                mediaRecorder.stop(); // Arrêt de l'enregistrement vidéo à la fin du temps imparti
+            }
+        }
+
+        requestAnimationFrame(animateFrame);
     }
 </script>
 
