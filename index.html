@@ -20,9 +20,20 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.6);
         }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .logo-container svg {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            box-shadow: 0 4px 10px rgba(255, 152, 0, 0.3);
+        }
         h1 {
             color: #ff9800;
             text-align: center;
+            margin-top: 5px;
             margin-bottom: 5px;
         }
         .subtitle {
@@ -65,17 +76,36 @@
             padding: 10px;
             box-sizing: border-box;
         }
+        .preview-tv img, .preview-tv video {
+            max-width: 100%;
+            max-height: 150px;
+            object-fit: contain;
+            border-radius: 6px;
+        }
         #drawingCanvas {
             background: #fff;
             border-radius: 6px;
             cursor: crosshair;
             display: none;
             margin-top: 10px;
+            width: 100%;
         }
-        .btn-toggle-draw {
+        .media-options {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn-option {
+            flex: 1;
+            padding: 10px;
+            font-size: 13px;
             background-color: #2196F3;
             color: white;
-            margin-top: 10px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
         }
         .btn-group {
             display: flex;
@@ -83,7 +113,6 @@
             margin-top: 15px;
         }
         button {
-            flex: 1;
             padding: 14px;
             border: none;
             border-radius: 8px;
@@ -101,11 +130,13 @@
             background-color: #4CAF50;
             color: white;
             display: none;
+            flex: 1;
         }
         .btn-modify {
             background-color: #f44336;
             color: white;
             display: none;
+            flex: 1;
         }
         .output-box {
             background: #252525;
@@ -124,6 +155,22 @@
 <body>
 
 <div class="container">
+    <div class="logo-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+            <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ff9800;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#ff5722;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <rect width="500" height="500" rx="100" fill="#141414"/>
+            <rect x="50" y="50" width="400" height="400" rx="80" fill="none" stroke="url(#grad)" stroke-width="12"/>
+            <path d="M150 320 L250 180 L350 320 Z" fill="url(#grad)" opacity="0.3"/>
+            <circle cx="250" cy="220" r="50" fill="url(#grad)"/>
+            <text x="250" y="380" font-family="Arial, sans-serif" font-weight="bold" font-size="55" fill="#ffffff" text-anchor="middle" letter-spacing="4">YALA</text>
+        </svg>
+    </div>
+
     <h1>Yala Creator</h1>
     <div class="subtitle">Studio Interactif — 100% Gratuit</div>
 
@@ -146,16 +193,22 @@
     <label>3. Décris ton histoire ou ton action :</label>
     <textarea id="storyInput" rows="3" placeholder="Ex: Un jeune du village s'avance... (Mets tes dialogues avec les voix entre parenthèses)"></textarea>
 
-    <button class="btn-toggle-draw" onclick="toggleDrawingPad()">🎨 Je veux dessiner mon art / personnage moi-même</button>
+    <label>4. Visuel des acteurs & personnages :</label>
+    <div class="media-options">
+        <button class="btn-option" onclick="toggleDrawingPad()">🎨 Dessiner moi-même</button>
+        <button class="btn-option" style="background-color: #9c27b0;" onclick="document.getElementById('mediaUpload').click()">📁 Importer photo / vidéo</button>
+    </div>
+    <input type="file" id="mediaUpload" accept="image/*,video/*" style="display:none;" onchange="handleMediaUpload(event)">
     
     <canvas id="drawingCanvas" width="300" height="150"></canvas>
-    <div id="drawStatus" style="font-size: 12px; color: #888; margin-top: 5px; display:none;">(Dessine ton croquis ci-dessus avec ton doigt, ou laisse l'application générer l'art automatiquement)</div>
+    <div id="drawStatus" style="font-size: 12px; color: #888; margin-top: 5px; display:none;">(Dessine ton croquis ci-dessus avec ton doigt)</div>
 
-    <label>4. Durée précise (0 à 60 minutes) :</label>
+    <label>5. Durée précise (0 à 60 minutes) :</label>
     <input type="number" id="durationInput" min="0" max="60" value="10" placeholder="Entre 0 et 60 minutes">
 
     <button class="btn-generate" onclick="generateEpisode()">Lancer la création de l'épisode</button>
 
+    <!-- Écran TV pour l'aperçu -->
     <div class="preview-tv" id="tvPreview">
         <div id="tvContent">📺 Écran TV : L'aperçu de ton épisode et des arts apparaîtra ici...</div>
     </div>
@@ -174,6 +227,7 @@
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
     let painting = false;
+    let uploadedMediaElement = null;
 
     function toggleDrawingPad() {
         if (canvas.style.display === "block") {
@@ -184,6 +238,21 @@
             document.getElementById('drawStatus').style.display = "block";
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
+    function handleMediaUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            const tvPreview = document.getElementById('tvContent');
+            if (file.type.startsWith('video/')) {
+                uploadedMediaElement = `<video src="${url}" controls autoplay loop style="max-width:100%; max-height:150px;"></video>`;
+            } else {
+                uploadedMediaElement = `<img src="${url}" style="max-width:100%; max-height:150px; border-radius:6px;">`;
+            }
+            tvPreview.innerHTML = "📁 Fichier importé avec succès ! Prêt pour l'aperçu TV :<br>" + uploadedMediaElement;
+            alert("Photo ou vidéo importée avec succès ! Tu la vois dans l'écran TV.");
         }
     }
 
@@ -230,30 +299,19 @@
         }
 
         outputBox.innerHTML = "⏳ Analyse en cours... Création des arts, découpage personnalisé de " + duration + " minutes et lecture des voix...";
-        tvPreview.innerHTML = "🎬 Génération du visuel et des personnages...";
+        
+        if (!uploadedMediaElement) {
+            tvPreview.innerHTML = "🎬 Génération du visuel et des personnages pour : " + decor;
+        }
 
         setTimeout(() => {
-            let decorImageText = "🛖 [Art généré : " + decor + "]";
-            if (canvas.style.display === "block") {
-                decorImageText = "🎨 [Art personnalisé intégré depuis ton dessin !]";
-            } else if(decor.includes("Africain")) {
-                decorImageText += "<br><span style='color:#ffb74d;'>✨ Style visuel : Cases rondes africaines, nature et ambiance chaleureuse.</span>";
-            } else if(decor.includes("Européen")) {
-                decorImageText += "<br><span style='color:#ffb74d;'>✨ Style visuel : Ruelles pavées et maisons en pierre.</span>";
-            } else {
-                decorImageText += "<br><span style='color:#ffb74d;'>✨ Style visuel : Gratte-ciels et ambiance urbaine moderne.</span>";
-            }
-
-            tvPreview.innerHTML = decorImageText;
-
             let scriptResult = "--- ÉPISODE CRÉÉ (" + duration + " min) ---\n\n";
             scriptResult += "🌍 Décor : " + decor + "\n";
             scriptResult += "🎭 Style et Voix : " + character + "\n\n";
             scriptResult += "📜 Scénario & Dialogues (avec détection des tons entre parenthèses) :\n" + story + "\n\n";
-            scriptResult += "✅ Statut : Regarde l'image sur l'écran TV. Si cela te plaît, clique sur Télécharger. Si tu veux changer un détail ou modifier l'art, clique sur Demander une modification.";
+            scriptResult += "✅ Statut : Regarde l'image/vidéo sur l'écran TV. Si cela te plaît, clique sur Télécharger. Si tu veux changer un détail, clique sur Demander une modification.";
 
             outputBox.innerHTML = scriptResult;
-            
             downloadBtn.style.display = "block";
             modifyBtn.style.display = "block";
         }, 1500);
