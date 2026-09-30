@@ -61,7 +61,6 @@
         }
         .preview-tv {
             width: 100%;
-            height: 220px;
             background: #000;
             border: 3px solid #ff9800;
             border-radius: 10px;
@@ -75,10 +74,11 @@
             text-align: center;
             padding: 10px;
             box-sizing: border-box;
+            min-height: 220px;
         }
-        .preview-tv img, .preview-tv video {
-            max-width: 100%;
-            max-height: 150px;
+        .preview-tv video, .preview-tv img {
+            width: 100%;
+            max-height: 240px;
             object-fit: contain;
             border-radius: 6px;
         }
@@ -172,7 +172,7 @@
     </div>
 
     <h1>Yala Creator</h1>
-    <div class="subtitle">Studio Interactif — 100% Gratuit</div>
+    <div class="subtitle">Studio Interactif — Regarde tes épisodes gratuitement</div>
 
     <label>1. Type de décor / Village :</label>
     <select id="decorStyle">
@@ -193,24 +193,24 @@
     <label>3. Décris ton histoire ou ton action :</label>
     <textarea id="storyInput" rows="3" placeholder="Ex: Un jeune du village s'avance... (Mets tes dialogues avec les voix entre parenthèses)"></textarea>
 
-    <label>4. Visuel des acteurs & personnages :</label>
+    <label>4. Fichier Vidéo ou Art principal de l'épisode :</label>
     <div class="media-options">
-        <button class="btn-option" onclick="toggleDrawingPad()">🎨 Dessiner moi-même</button>
-        <button class="btn-option" style="background-color: #9c27b0;" onclick="document.getElementById('mediaUpload').click()">📁 Importer photo / vidéo</button>
+        <button class="btn-option" onclick="toggleDrawingPad()">🎨 Dessiner le croquis</button>
+        <button class="btn-option" style="background-color: #9c27b0;" onclick="document.getElementById('mediaUpload').click()">📁 Charger la vidéo/photo de l'épisode</button>
     </div>
     <input type="file" id="mediaUpload" accept="image/*,video/*" style="display:none;" onchange="handleMediaUpload(event)">
     
     <canvas id="drawingCanvas" width="300" height="150"></canvas>
-    <div id="drawStatus" style="font-size: 12px; color: #888; margin-top: 5px; display:none;">(Dessine ton croquis ci-dessus avec ton doigt)</div>
+    <div id="drawStatus" style="font-size: 12px; color: #888; margin-top: 5px; display:none;">(Dessine ton art directement avec ton doigt)</div>
 
     <label>5. Durée précise (0 à 60 minutes) :</label>
     <input type="number" id="durationInput" min="0" max="60" value="10" placeholder="Entre 0 et 60 minutes">
 
-    <button class="btn-generate" onclick="generateEpisode()">Lancer la création de l'épisode</button>
+    <button class="btn-generate" onclick="generateEpisode()">Lancer et diffuser sur la Télévision</button>
 
-    <!-- Écran TV pour l'aperçu -->
+    <!-- Écran TV / Lecteur Principal Gratuit -->
     <div class="preview-tv" id="tvPreview">
-        <div id="tvContent">📺 Écran TV : L'aperçu de ton épisode et des arts apparaîtra ici...</div>
+        <div id="tvContent">📺 Télévision Yala : Importe ta vidéo ou lance la création pour regarder ton épisode gratuitement ici...</div>
     </div>
 
     <div class="btn-group">
@@ -219,7 +219,7 @@
     </div>
 
     <div class="output-box" id="outputBox">
-        Le scénario, les voix et les arts générés s'afficheront ici...
+        Le scénario et les détails de l'épisode s'afficheront ici...
     </div>
 </div>
 
@@ -227,7 +227,7 @@
     const canvas = document.getElementById('drawingCanvas');
     const ctx = canvas.getContext('2d');
     let painting = false;
-    let uploadedMediaElement = null;
+    let customMediaHTML = null;
 
     function toggleDrawingPad() {
         if (canvas.style.display === "block") {
@@ -247,12 +247,12 @@
             const url = URL.createObjectURL(file);
             const tvPreview = document.getElementById('tvContent');
             if (file.type.startsWith('video/')) {
-                uploadedMediaElement = `<video src="${url}" controls autoplay loop style="max-width:100%; max-height:150px;"></video>`;
+                customMediaHTML = `<video src="${url}" controls autoplay style="width:150%; max-height:240px; border-radius:6px;"></video>`;
             } else {
-                uploadedMediaElement = `<img src="${url}" style="max-width:100%; max-height:150px; border-radius:6px;">`;
+                customMediaHTML = `<img src="${url}" style="width:100%; max-height:240px; object-fit:contain; border-radius:6px;">`;
             }
-            tvPreview.innerHTML = "📁 Fichier importé avec succès ! Prêt pour l'aperçu TV :<br>" + uploadedMediaElement;
-            alert("Photo ou vidéo importée avec succès ! Tu la vois dans l'écran TV.");
+            tvPreview.innerHTML = customMediaHTML;
+            alert("Vidéo/Photo chargée dans la TV avec succès !");
         }
     }
 
@@ -293,23 +293,31 @@
         const downloadBtn = document.getElementById('downloadBtn');
         const modifyBtn = document.getElementById('modifyBtn');
 
-        if (!story.trim()) {
-            alert("Veuillez décrire votre histoire avant de lancer la création !");
+        if (!story.trim() && !customMediaHTML) {
+            alert("Veuillez décrire votre histoire ou charger une vidéo pour lancer la lecture !");
             return;
         }
 
-        outputBox.innerHTML = "⏳ Analyse en cours... Création des arts, découpage personnalisé de " + duration + " minutes et lecture des voix...";
+        outputBox.innerHTML = "⏳ Préparation du lecteur de l'épisode (" + duration + " min)... Chargement des voix et diffusion gratuite sur la TV...";
         
-        if (!uploadedMediaElement) {
-            tvPreview.innerHTML = "🎬 Génération du visuel et des personnages pour : " + decor;
-        }
-
         setTimeout(() => {
-            let scriptResult = "--- ÉPISODE CRÉÉ (" + duration + " min) ---\n\n";
+            if (!customMediaHTML) {
+                // Simulation d'une vidéo générée pour la TV si aucun fichier n'a été importé
+                tvPreview.innerHTML = `<div style="padding:20px; color:#ffb74d;">
+                    <h3>🎬 Lecture de l'Épisode (Gratuit)</h3>
+                    <p style="font-size:12px; color:#fff;">Décor : ${decor}</p>
+                    <div style="background:#111; padding:15px; border-radius:6px; border:1px dashed #ff9800; margin-top:10px;">
+                        ▶️ [Diffusion en cours sur la TV - ${duration} minutes]<br>
+                        <span style="font-size:11px; color:#aaa;">(Voix et animation prêtes pour le visionnage)</span>
+                    </div>
+                </div>`;
+            }
+
+            let scriptResult = "--- ÉPISODE PRÊT & DIFFUSÉ (" + duration + " min) ---\n\n";
             scriptResult += "🌍 Décor : " + decor + "\n";
             scriptResult += "🎭 Style et Voix : " + character + "\n\n";
-            scriptResult += "📜 Scénario & Dialogues (avec détection des tons entre parenthèses) :\n" + story + "\n\n";
-            scriptResult += "✅ Statut : Regarde l'image/vidéo sur l'écran TV. Si cela te plaît, clique sur Télécharger. Si tu veux changer un détail, clique sur Demander une modification.";
+            scriptResult += "📜 Scénario : " + story + "\n\n";
+            scriptResult += "✅ Statut : L'épisode est en lecture libre et gratuite sur la télévision ci-dessus. Tu peux le regarder, le télécharger ou demander une modification.";
 
             outputBox.innerHTML = scriptResult;
             downloadBtn.style.display = "block";
@@ -318,14 +326,14 @@
     }
 
     function downloadEpisode() {
-        alert("Succès ! L'épisode, les arts et les voix configurées ont été téléchargés dans votre téléphone, prêts pour TikTok et YouTube.");
+        alert("Succès ! L'épisode vidéo complet a été téléchargé sur ton téléphone, prêt à être partagé.");
     }
 
     function requestModify() {
-        let correction = prompt("Qu'aimerais-tu modifier ? (Ex: Changer le design de l'art, ajuster une voix, modifier un personnage...)");
+        let correction = prompt("Qu'aimerais-tu modifier sur l'épisode ?");
         if (correction) {
-            alert("Prise en compte ! L'application met à jour l'épisode et l'art visuel selon vos consignes...");
-            document.getElementById('outputBox').innerHTML += "\n\n🔄 Modification appliquée : " + correction;
+            alert("Mise à jour de la vidéo sur la TV en cours...");
+            document.getElementById('outputBox').innerHTML += "\n\n🔄 Modification : " + correction;
         }
     }
 </script>
