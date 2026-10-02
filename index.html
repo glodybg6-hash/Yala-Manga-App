@@ -1,266 +1,76 @@
-<!DOCTYPE html>
+html_content = """<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JDM - Console Play Offline</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
+        * { box-sizing: border-box; }
         body {
-            margin: 0;
-            padding: 0;
-            background-color: #0b0f19;
-            color: #ffffff;
+            margin: 0; padding: 0;
+            background-color: #0b0f19; color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
-
-        /* En-tête de la console */
         header {
             background: linear-gradient(90deg, #1f2937, #111827);
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #3b82f6;
-            height: 65px;
+            padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 2px solid #3b82f6; height: 65px;
         }
-        h1 {
-            margin: 0;
-            font-size: 20px;
-            color: #60a5fa;
-            letter-spacing: 1px;
-        }
-
-        /* Conteneur principal du catalogue */
+        h1 { margin: 0; font-size: 20px; color: #60a5fa; letter-spacing: 1px; }
+        
         .main-container {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-            gap: 20px;
+            flex: 1; padding: 20px; overflow-y: auto;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 20px;
         }
-
         .game-card {
-            background-color: #1f2937;
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            border: 2px solid #374151;
-            transition: 0.3s;
-            cursor: pointer;
+            background-color: #1f2937; border-radius: 12px; overflow: hidden;
+            display: flex; flex-direction: column; border: 2px solid #374151;
+            transition: 0.3s; cursor: pointer;
         }
-        .game-card:hover {
-            border-color: #3b82f6;
-            transform: translateY(-4px);
-        }
-
-        /* Image miniature du jeu */
-        .game-img-container {
-            width: 100%;
-            height: 130px;
-            background-color: #111;
-            overflow: hidden;
-            position: relative;
-        }
-        .game-img-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .game-info {
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-            justify-content: space-between;
-        }
-
-        .game-title {
-            font-size: 15px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #f3f4f6;
-        }
-
+        .game-card:hover { border-color: #3b82f6; transform: translateY(-4px); }
+        .game-img-container { width: 100%; height: 130px; background-color: #111; overflow: hidden; position: relative; }
+        .game-img-container img { width: 100%; height: 100%; object-fit: cover; }
+        .game-info { padding: 12px; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+        .game-title { font-size: 15px; font-weight: bold; margin-bottom: 8px; color: #f3f4f6; }
         .btn-download {
-            background-color: #3b82f6;
-            color: white;
-            border: none;
-            padding: 8px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: bold;
-            width: 100%;
-            transition: 0.2s;
+            background-color: #3b82f6; color: white; border: none; padding: 8px 10px;
+            border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; width: 100%; transition: 0.2s;
         }
-        .btn-download:hover {
-            background-color: #2563eb;
-        }
+        .btn-download:hover { background-color: #2563eb; }
 
-        /* Écran de jeu en mode Paysage */
         #game-emulator-screen {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #000;
-            z-index: 100;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 10px;
+            display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: #000; z-index: 100; flex-direction: column; justify-content: space-between; padding: 10px;
         }
-
-        .emulator-top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            height: 40px;
+        .emulator-top-bar { display: flex; justify-content: space-between; align-items: center; height: 40px; }
+        .btn-back { background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .emulator-main-area { flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; gap: 10px; height: calc(100vh - 60px); }
+        
+        .d-pad, .action-buttons {
+            display: grid; grid-template-columns: repeat(3, 45px); grid-template-rows: repeat(3, 45px); gap: 2px; align-items: center; justify-items: center;
         }
-
-        .btn-back {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 6px 14px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .emulator-main-area {
-            flex: 1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 10px;
-            gap: 10px;
-            height: calc(100vh - 60px);
-        }
-
-        /* Croix directionnelle (Gauche) */
-        .d-pad {
-            display: grid;
-            grid-template-columns: repeat(3, 45px);
-            grid-template-rows: repeat(3, 45px);
-            gap: 2px;
-            align-items: center;
-            justify-items: center;
-        }
-
-        /* Boutons d'action (Droite) */
-        .action-buttons {
-            display: grid;
-            grid-template-columns: repeat(3, 45px);
-            grid-template-rows: repeat(3, 45px);
-            gap: 2px;
-            align-items: center;
-            justify-items: center;
-        }
-
-        /* Écran du milieu (Le jeu en cours) */
         .emulator-viewport {
-            flex: 1;
-            height: 100%;
-            background: #111;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #333;
-            color: #aaa;
-            text-align: center;
-            padding: 10px;
+            flex: 1; height: 100%; background: #111; border-radius: 8px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 1px solid #333; color: #aaa; text-align: center; padding: 10px;
         }
-
         .ps-btn {
-            background-color: rgba(31, 41, 55, 0.85);
-            color: white;
-            border: 2px solid #4b5563;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 16px;
-            user-select: none;
+            background-color: rgba(31, 41, 55, 0.85); color: white; border: 2px solid #4b5563;
+            width: 45px; height: 45px; border-radius: 50%; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; user-select: none;
         }
-        .ps-btn:active {
-            background-color: #3b82f6;
-            transform: scale(0.95);
-        }
+        .ps-btn:active { background-color: #3b82f6; transform: scale(0.95); }
     </style>
 </head>
 <body>
-
-    <!-- Menu Principal / Bibliothèque -->
     <header>
         <h1>JDM — CONSOLE OFFLINE</h1>
         <div style="font-size: 13px; color: #9ca3af;">Bibliothèque Play (5000+ Jeux)</div>
     </header>
 
-    <div class="main-container">
-        <!-- Jeu 1 : EA Sports FC 27 -->
-        <div class="game-card">
-            <div class="game-img-container">
-                <img src="https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=500&auto=format&fit=crop&q=60" alt="EA Sports FC 27">
-            </div>
-            <div class="game-info">
-                <div class="game-title">EA Sports FC 27</div>
-                <button class="btn-download" onclick="lancerJeu('EA Sports FC 27')">Télécharger & Jouer</button>
-            </div>
-        </div>
+    <div class="main-container" id="game-grid"></div>
 
-        <!-- Jeu 2 : GTA San Andreas -->
-        <div class="game-card">
-            <div class="game-img-container">
-                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&auto=format&fit=crop&q=60" alt="GTA San Andreas">
-            </div>
-            <div class="game-info">
-                <div class="game-title">GTA San Andreas</div>
-                <button class="btn-download" onclick="lancerJeu('GTA San Andreas')">Télécharger & Jouer</button>
-            </div>
-        </div>
-
-        <!-- Jeu 3 : GTA V -->
-        <div class="game-card">
-            <div class="game-img-container">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&auto=format&fit=crop&q=60" alt="GTA V">
-            </div>
-            <div class="game-info">
-                <div class="game-title">Grand Theft Auto V</div>
-                <button class="btn-download" onclick="lancerJeu('Grand Theft Auto V')">Télécharger & Jouer</button>
-            </div>
-        </div>
-
-        <!-- Jeu 4 : Naruto Storm -->
-        <div class="game-card">
-            <div class="game-img-container">
-                <img src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500&auto=format&fit=crop&q=60" alt="Naruto Storm">
-            </div>
-            <div class="game-info">
-                <div class="game-title">Naruto Storm Mobile</div>
-                <button class="btn-download" onclick="lancerJeu('Naruto Storm Mobile')">Télécharger & Jouer</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Interface du Lecteur de Jeu en Mode Paysage -->
     <div id="game-emulator-screen">
         <div class="emulator-top-bar">
             <button class="btn-back" onclick="quitterJeu()">⬅ Quitter</button>
@@ -269,20 +79,17 @@
         </div>
 
         <div class="emulator-main-area">
-            <!-- Croix directionnelle -->
             <div class="d-pad">
                 <div></div><div class="ps-btn">⬆</div><div></div>
                 <div class="ps-btn">⬅️</div><div style="width:45px;height:45px;"></div><div class="ps-btn">➡️</div>
                 <div></div><div class="ps-btn">⬇️</div><div></div>
             </div>
 
-            <!-- Écran central du jeu -->
-            <div class="emulator-viewport" id="viewport-screen">
+            <div class="emulator-viewport">
                 <h3 id="emulator-game-name" style="margin:0 0 10px 0; color:#fff;">Chargement...</h3>
-                <p style="margin:0; font-size:14px;">Connexion locale établie. Prêt à jouer !</p>
+                <p style="margin:0; font-size:14px;" id="game-status-text">Connexion locale établie. Prêt à jouer !</p>
             </div>
 
-            <!-- Boutons d'action -->
             <div class="action-buttons">
                 <div></div><div class="ps-btn">🔺</div><div></div>
                 <div class="ps-btn">⬛</div><div style="width:45px;height:45px;"></div><div class="ps-btn">⭕</div>
@@ -292,6 +99,31 @@
     </div>
 
     <script>
+        const jeux = [
+            { nom: "EA Sports FC 27", img: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=500&auto=format&fit=crop&q=60" },
+            { nom: "GTA San Andreas", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&auto=format&fit=crop&q=60" },
+            { nom: "Grand Theft Auto V", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&auto=format&fit=crop&q=60" },
+            { nom: "Naruto Storm Mobile", img: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500&auto=format&fit=crop&q=60" },
+            { nom: "Spider-Man Miles Morales", img: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=500&auto=format&fit=crop&q=60" },
+            { nom: "God of War Ragnarok", img: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=500&auto=format&fit=crop&q=60" }
+        ];
+
+        const grid = document.getElementById('game-grid');
+        jeux.forEach(jeu => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <div class="game-img-container">
+                    <img src="${jeu.img}" alt="${jeu.nom}">
+                </div>
+                <div class="game-info">
+                    <div class="game-title">${jeu.nom}</div>
+                    <button class="btn-download" onclick="lancerJeu('${jeu.nom}')">Télécharger & Jouer</button>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+
         function lancerJeu(nomDuJeu) {
             document.getElementById('active-game-title').innerText = nomDuJeu;
             document.getElementById('emulator-game-name').innerText = nomDuJeu;
@@ -306,8 +138,12 @@
             document.getElementById('game-emulator-screen').style.display = 'none';
         }
     </script>
-
 </body>
 </html>
+"""
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_content)
+
 
 
