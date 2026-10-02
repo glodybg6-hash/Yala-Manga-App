@@ -2,7 +2,7 @@ html_content = """<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>JDM - Console Play Offline</title>
     <style>
         * { box-sizing: border-box; }
@@ -15,7 +15,7 @@ html_content = """<!DOCTYPE html>
         header {
             background: linear-gradient(90deg, #1f2937, #111827);
             padding: 12px 20px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 2px solid #3b82f6; height: 65px;
+            border-bottom: 2px solid #3b82f6; height: 65px; flex-shrink: 0;
         }
         h1 { margin: 0; font-size: 20px; color: #60a5fa; letter-spacing: 1px; }
         
@@ -39,26 +39,56 @@ html_content = """<!DOCTYPE html>
         }
         .btn-download:hover { background-color: #2563eb; }
 
+        /* Écran Émulateur Mode Paysage Intégral */
         #game-emulator-screen {
             display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background: #000; z-index: 100; flex-direction: column; justify-content: space-between; padding: 10px;
+            background: #000; z-index: 100; flex-direction: column; justify-content: space-between; padding: 8px 12px;
         }
-        .emulator-top-bar { display: flex; justify-content: space-between; align-items: center; height: 40px; }
-        .btn-back { background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .emulator-main-area { flex: 1; display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; gap: 10px; height: calc(100vh - 60px); }
+        .emulator-top-bar { display: flex; justify-content: space-between; align-items: center; height: 40px; flex-shrink: 0; }
+        .btn-back { background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
         
-        .d-pad, .action-buttons {
-            display: grid; grid-template-columns: repeat(3, 45px); grid-template-rows: repeat(3, 45px); gap: 2px; align-items: center; justify-items: center;
+        /* Zone centrale contenant la manette PS5 complète et l'écran du jeu */
+        .emulator-main-area {
+            flex: 1; display: flex; justify-content: space-between; align-items: center; gap: 10px; width: 100%; overflow: hidden;
         }
+        
+        /* Contrôles Gauche (L1, L2, Croix directionnelle) */
+        .controls-left {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 110px; flex-shrink: 0;
+        }
+        .shoulder-group { display: flex; gap: 6px; width: 100%; justify-content: center; }
+        .ps-shoulder {
+            background-color: #1f2937; color: #60a5fa; border: 1.5px solid #3b82f6;
+            padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; user-select: none;
+        }
+        .d-pad {
+            display: grid; grid-template-columns: repeat(3, 38px); grid-template-rows: repeat(3, 38px); gap: 2px; align-items: center; justify-items: center;
+        }
+
+        /* Écran du milieu (Le jeu en cours avec image en fond) */
         .emulator-viewport {
-            flex: 1; height: 100%; background: #111; border-radius: 8px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            border: 1px solid #333; color: #aaa; text-align: center; padding: 10px;
+            flex: 1; height: 100%; max-height: 100%; background-size: cover; background-position: center;
+            border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 2px solid #3b82f6; text-align: center; padding: 10px; position: relative; overflow: hidden;
         }
+        .emulator-viewport::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7); z-index: 1;
+        }
+        .emulator-content { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
+        /* Contrôles Droit (R1, R2, Boutons Action ▲ ⬛ ⭕ ❌) */
+        .controls-right {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 110px; flex-shrink: 0;
+        }
+        .action-buttons {
+            display: grid; grid-template-columns: repeat(3, 38px); grid-template-rows: repeat(3, 38px); gap: 2px; align-items: center; justify-items: center;
+        }
+
         .ps-btn {
-            background-color: rgba(31, 41, 55, 0.85); color: white; border: 2px solid #4b5563;
-            width: 45px; height: 45px; border-radius: 50%; font-weight: bold;
-            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; user-select: none;
+            background-color: rgba(31, 41, 55, 0.9); color: white; border: 2px solid #4b5563;
+            width: 38px; height: 38px; border-radius: 50%; font-weight: bold;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; user-select: none;
         }
         .ps-btn:active { background-color: #3b82f6; transform: scale(0.95); }
     </style>
@@ -71,41 +101,59 @@ html_content = """<!DOCTYPE html>
 
     <div class="main-container" id="game-grid"></div>
 
+    <!-- Interface Émulateur Plein Écran Paysage -->
     <div id="game-emulator-screen">
         <div class="emulator-top-bar">
             <button class="btn-back" onclick="quitterJeu()">⬅ Quitter</button>
-            <div id="active-game-title" style="font-weight: bold; color: #60a5fa; font-size: 15px;">Jeu en cours</div>
+            <div id="active-game-title" style="font-weight: bold; color: #60a5fa; font-size: 16px;">Jeu en cours</div>
             <div style="font-size: 12px; color: #10b981;">● Mode Hors Ligne</div>
         </div>
 
         <div class="emulator-main-area">
-            <div class="d-pad">
-                <div></div><div class="ps-btn">⬆</div><div></div>
-                <div class="ps-btn">⬅️</div><div style="width:45px;height:45px;"></div><div class="ps-btn">➡️</div>
-                <div></div><div class="ps-btn">⬇️</div><div></div>
+            <!-- Contrôles Gauche : L1/L2 et D-Pad -->
+            <div class="controls-left">
+                <div class="shoulder-group">
+                    <div class="ps-shoulder" onclick="triggerAction('L2')">L2</div>
+                    <div class="ps-shoulder" onclick="triggerAction('L1')">L1</div>
+                </div>
+                <div class="d-pad">
+                    <div></div><div class="ps-btn" onclick="triggerAction('UP')">⬆</div><div></div>
+                    <div class="ps-btn" onclick="triggerAction('LEFT')">⬅️</div><div style="width:38px;height:38px;"></div><div class="ps-btn" onclick="triggerAction('RIGHT')">➡️</div>
+                    <div></div><div class="ps-btn" onclick="triggerAction('DOWN')">⬇️</div><div></div>
+                </div>
             </div>
 
-            <div class="emulator-viewport">
-                <h3 id="emulator-game-name" style="margin:0 0 10px 0; color:#fff;">Chargement...</h3>
-                <p style="margin:0; font-size:14px;" id="game-status-text">Connexion locale établie. Prêt à jouer !</p>
+            <!-- Écran Central avec l'affiche du jeu -->
+            <div class="emulator-viewport" id="viewport-screen">
+                <div class="emulator-content">
+                    <h3 id="emulator-game-name" style="margin:0 0 8px 0; color:#fff; font-size: 22px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Chargement...</h3>
+                    <p style="margin:0; font-size:14px; color: #cbd5e1;" id="game-status-text">Connexion locale établie. Prêt à jouer !</p>
+                </div>
             </div>
 
-            <div class="action-buttons">
-                <div></div><div class="ps-btn">🔺</div><div></div>
-                <div class="ps-btn">⬛</div><div style="width:45px;height:45px;"></div><div class="ps-btn">⭕</div>
-                <div></div><div class="ps-btn">❌</div><div></div>
+            <!-- Contrôles Droit : R1/R2 et Boutons PlayStation -->
+            <div class="controls-right">
+                <div class="shoulder-group">
+                    <div class="ps-shoulder" onclick="triggerAction('R1')">R1</div>
+                    <div class="ps-shoulder" onclick="triggerAction('R2')">R2</div>
+                </div>
+                <div class="action-buttons">
+                    <div></div><div class="ps-btn" onclick="triggerAction('TRIANGLE')">🔺</div><div></div>
+                    <div class="ps-btn" onclick="triggerAction('SQUARE')">⬛</div><div style="width:38px;height:38px;"></div><div class="ps-btn" onclick="triggerAction('CIRCLE')">⭕</div>
+                    <div></div><div class="ps-btn" onclick="triggerAction('CROSS')">❌</div><div></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         const jeux = [
-            { nom: "EA Sports FC 27", img: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=500&auto=format&fit=crop&q=60" },
-            { nom: "GTA San Andreas", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=500&auto=format&fit=crop&q=60" },
-            { nom: "Grand Theft Auto V", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=500&auto=format&fit=crop&q=60" },
-            { nom: "Naruto Storm Mobile", img: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=500&auto=format&fit=crop&q=60" },
-            { nom: "Spider-Man Miles Morales", img: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=500&auto=format&fit=crop&q=60" },
-            { nom: "God of War Ragnarok", img: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=500&auto=format&fit=crop&q=60" }
+            { nom: "EA Sports FC 27", img: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=800&auto=format&fit=crop&q=80" },
+            { nom: "GTA San Andreas", img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80" },
+            { nom: "Grand Theft Auto V", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80" },
+            { nom: "Naruto Storm Mobile", img: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&auto=format&fit=crop&q=80" },
+            { nom: "Spider-Man Miles Morales", img: "https://images.unsplash.com/photo-1635805737707-575885ab0820?w=800&auto=format&fit=crop&q=80" },
+            { nom: "God of War Ragnarok", img: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&auto=format&fit=crop&q=80" }
         ];
 
         const grid = document.getElementById('game-grid');
@@ -118,17 +166,23 @@ html_content = """<!DOCTYPE html>
                 </div>
                 <div class="game-info">
                     <div class="game-title">${jeu.nom}</div>
-                    <button class="btn-download" onclick="lancerJeu('${jeu.nom}')">Télécharger & Jouer</button>
+                    <button class="btn-download" onclick="lancerJeu('${jeu.nom}', '${jeu.img}')">Télécharger & Jouer</button>
                 </div>
             `;
             grid.appendChild(card);
         });
 
-        function lancerJeu(nomDuJeu) {
+        function lancerJeu(nomDuJeu, imgUrl) {
             document.getElementById('active-game-title').innerText = nomDuJeu;
             document.getElementById('emulator-game-name').innerText = nomDuJeu;
+            
+            // Applique l'affiche du jeu en fond de l'écran central
+            const viewport = document.getElementById('viewport-screen');
+            viewport.style.backgroundImage = `url('${imgUrl}')`;
+
             document.getElementById('game-emulator-screen').style.display = 'flex';
             
+            // Force l'orientation paysage si supportée par le navigateur mobile
             if (screen.orientation && screen.orientation.lock) {
                 screen.orientation.lock('landscape').catch(function() {});
             }
@@ -136,6 +190,13 @@ html_content = """<!DOCTYPE html>
 
         function quitterJeu() {
             document.getElementById('game-emulator-screen').style.display = 'none';
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+            }
+        }
+
+        function triggerAction(btn) {
+            console.log("Action manette : " + btn);
         }
     </script>
 </body>
@@ -144,6 +205,4 @@ html_content = """<!DOCTYPE html>
 
 with open("index.html", "w", encoding="utf-8") as f:
     f.write(html_content)
-
-
 
