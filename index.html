@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yala Creator - Studio Vidéo Manga</title>
+    <title>Yala Creator - Studio Manga Live</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -80,8 +80,8 @@
             cursor: pointer;
             text-align: center;
         }
-        .btn-generate {
-            background-color: #ff9800;
+        .btn-play {
+            background-color: #4CAF50;
             color: white;
             width: 100%;
             margin-top: 20px;
@@ -92,26 +92,10 @@
             font-size: 16px;
             cursor: pointer;
         }
-        .btn-download {
-            background-color: #4CAF50;
-            color: white;
-            display: none;
-            width: 100%;
-            margin-top: 15px;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 15px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            box-sizing: border-box;
-        }
         .status-box {
             background: #1f1f1f;
             padding: 12px;
-            border-left: 4px solid #ff9800;
+            border-left: 4px solid #4CAF50;
             margin-top: 15px;
             border-radius: 6px;
             font-size: 13px;
@@ -123,7 +107,7 @@
 
 <div class="container">
     <h1>Yala Creator</h1>
-    <div class="subtitle">Studio Manga — Générateur de Vidéos Animées</div>
+    <div class="subtitle">Studio Manga — Lecteur & Simulateur Live</div>
 
     <label>1. Texte de l'histoire et Dialogues :</label>
     <textarea id="storyInput" rows="3" placeholder="Ex: Mapinga Kasongo en plein combat..."></textarea>
@@ -132,20 +116,18 @@
     <button class="btn-option" onclick="document.getElementById('mediaUpload').click()">📁 Choisir l'image principale</button>
     <input type="file" id="mediaUpload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
 
-    <label>3. Durée de la vidéo (recommandé : 5 à 10 secondes) :</label>
-    <input type="number" id="durationInput" min="3" max="15" value="6">
+    <label>3. Durée de l'animation (secondes) :</label>
+    <input type="number" id="durationInput" min="3" max="60" value="10">
 
-    <button class="btn-generate" onclick="startVideoGeneration()">🎬 Créer et Enregistrer la Vidéo</button>
+    <button class="btn-play" onclick="startLiveAnimation()">▶ Lancer l'Animation Live</button>
 
     <!-- Écran TV / Canevas Animé -->
     <div class="tv-player">
         <canvas id="animCanvas" width="600" height="350"></canvas>
     </div>
 
-    <a id="downloadVideoBtn" class="btn-download">📥 Télécharger la Vidéo (.webm)</a>
-
     <div class="status-box" id="statusBox">
-        Statut : Prêt. Choisis ton image et clique sur Créer.
+        Statut : Prêt. Choisis ton image, écris ton texte et lance la lecture.
     </div>
 </div>
 
@@ -153,10 +135,9 @@
     const canvas = document.getElementById('animCanvas');
     const ctx = canvas.getContext('2d');
     let uploadedImage = null;
-    let mediaRecorder;
-    let recordedChunks = [];
+    let animationId = null;
 
-    // Affichage d'un fond par défaut propre au démarrage
+    // Image par défaut au démarrage
     let currentImage = new Image();
     currentImage.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='350' fill='%23111'><rect width='600' height='350'/><text x='300' y='175' fill='%23ff9800' font-size='18' text-anchor='middle'>Aucune image chargée</text></svg>";
     currentImage.onload = () => {
@@ -174,7 +155,7 @@
                     currentImage = img;
                     ctx.clearRect(0, 0, canvas.width, canvas.height);
                     ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
-                    document.getElementById('statusBox').innerHTML = "✅ Image chargée et affichée dans le studio !";
+                    document.getElementById('statusBox').innerHTML = "✅ Image chargée avec succès dans le studio !";
                 }
                 img.src = e.target.result;
             }
@@ -182,44 +163,14 @@
         }
     }
 
-    function startVideoGeneration() {
+    function startLiveAnimation() {
+        if (animationId) cancelAnimationFrame(animationId);
+
         const story = document.getElementById('storyInput').value;
-        const durationSec = parseInt(document.getElementById('durationInput').value) || 6;
+        const durationSec = parseInt(document.getElementById('durationInput').value) || 10;
         const statusBox = document.getElementById('statusBox');
-        const downloadBtn = document.getElementById('downloadVideoBtn');
 
-        downloadBtn.style.display = "none";
-        statusBox.innerHTML = "⏳ Génération et enregistrement de la vidéo en cours...";
-
-        // Capture du flux vidéo depuis le canvas
-        const stream = canvas.captureStream(30);
-        recordedChunks = [];
-        
-        try {
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-        } catch (e) {
-            try {
-                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-            } catch (err) {
-                mediaRecorder = new MediaRecorder(stream);
-            }
-        }
-
-        mediaRecorder.ondataavailable = function(event) {
-            if (event.data.size > 0) {
-                recordedChunks.push(event.data);
-            }
-        };
-
-        mediaRecorder.onstop = function() {
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            const videoUrl = URL.createObjectURL(blob);
-            downloadBtn.href = videoUrl;
-            downloadBtn.style.display = "block";
-            statusBox.innerHTML = "✅ Vidéo générée avec succès ! Clique sur le bouton vert pour la télécharger.";
-        };
-
-        mediaRecorder.start();
+        statusBox.innerHTML = "▶ Lecture de l'animation en cours...";
 
         let startTime = null;
         let imgToDraw = uploadedImage || currentImage;
@@ -231,8 +182,8 @@
             if (elapsed < durationSec) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // Effet de zoom fluide sur l'image
-                let scale = 1 + (elapsed * 0.02);
+                // Effet de zoom fluide (Ken Burns)
+                let scale = 1 + (elapsed * 0.015);
                 let w = canvas.width * scale;
                 let h = canvas.height * scale;
                 let x = (canvas.width - w) / 2;
@@ -242,7 +193,7 @@
                 ctx.drawImage(imgToDraw, x, y, w, h);
                 ctx.restore();
 
-                // Bandeau texte en bas
+                // Bandeau sous-titre en bas
                 ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
                 ctx.fillRect(0, canvas.height - 55, canvas.width, 55);
 
@@ -252,13 +203,13 @@
                 let displayText = story ? story : "Épisode Manga - Yala Creator";
                 ctx.fillText(displayText, canvas.width / 2, canvas.height - 20);
 
-                requestAnimationFrame(animateFrame);
+                animationId = requestAnimationFrame(animateFrame);
             } else {
-                mediaRecorder.stop();
+                statusBox.innerHTML = "✅ Lecture terminée ! Tu peux relancer ou enregistrer ton écran.";
             }
         }
 
-        requestAnimationFrame(animateFrame);
+        animationId = requestAnimationFrame(animateFrame);
     }
 </script>
 
