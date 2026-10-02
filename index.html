@@ -3,215 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yala Creator - Studio Manga Live</title>
+    <title>JDM - Console Portable Offline</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0b0b0b;
-            color: #ffffff;
-            margin: 0;
-            padding: 15px;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #161616;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
-        }
-        h1 {
-            color: #ff9800;
-            text-align: center;
-            margin-top: 5px;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            text-align: center;
-            font-size: 13px;
-            color: #999;
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-top: 15px;
-            color: #ffb74d;
-            font-weight: bold;
-            font-size: 14px;
-        }
-        textarea, input {
-            width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            background: #222;
-            border: 1px solid #444;
-            color: white;
-            border-radius: 8px;
+        * {
             box-sizing: border-box;
         }
-        .tv-player {
-            width: 100%;
-            height: 280px;
-            background: #000;
-            border: 4px solid #ff9800;
-            border-radius: 12px;
-            margin-top: 20px;
-            position: relative;
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0b0f19;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
+        }
+
+        /* En-tête de la console */
+        header {
+            background: linear-gradient(90deg, #1f2937, #111827);
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #3b82f6;
+            height: 60px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 20px;
+            color: #60a5fa;
+            letter-spacing: 1px;
+        }
+
+        /* Conteneur principal du catalogue */
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .game-card {
+            background-color: #1f2937;
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+        .game-card:hover {
+            border-color: #3b82f6;
+        }
+        .game-screen {
+            background: #374151;
+            height: 100px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
         }
-        #animCanvas {
-            width: 100%;
-            height: 100%;
-            background: #111;
-            object-fit: contain;
+        .game-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin: 10px 0 5px 0;
         }
-        .btn-option {
-            width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            background-color: #9c27b0;
+        .btn-download {
+            background-color: #3b82f6;
             color: white;
             border: none;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 4px;
             cursor: pointer;
-            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
         }
-        .btn-play {
-            background-color: #4CAF50;
-            color: white;
-            width: 100%;
-            margin-top: 20px;
+        .btn-download:hover {
+            background-color: #2563eb;
+        }
+
+        /* Écran de jeu en mode Paysage (Caché par défaut) */
+        #game-emulator-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 100;
+            flex-direction: column;
+            justify-content: space-between;
             padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
         }
-        .status-box {
-            background: #1f1f1f;
-            padding: 12px;
-            border-left: 4px solid #4CAF50;
-            margin-top: 15px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #bbb;
+
+        .emulator-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-back {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Zone centrale du jeu (Grand écran horizontal) */
+        .emulator-viewport {
+            flex: 1;
+            background: #111;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #333;
+            font-size: 18px;
+            color: #888;
+        }
+
+        /* Manette intégrée sur les côtés en mode paysage (façon PSP/PS Vita) */
+        .emulator-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .d-pad, .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 40px);
+            grid-template-rows: repeat(3, 40px);
+            gap: 2px;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .ps-btn {
+            background-color: #1f2937;
+            color: white;
+            border: 2px solid #4b5563;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .ps-btn:active {
+            background-color: #3b82f6;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Yala Creator</h1>
-    <div class="subtitle">Studio Manga — Lecteur & Simulateur Live</div>
+    <!-- Menu Principal / Bibliothèque -->
+    <header>
+        <h1>JDM — CONSOLE OFFLINE</h1>
+        <div style="font-size: 14px; color: #9ca3af;">1000+ Jeux Disponibles</div>
+    </header>
 
-    <label>1. Texte de l'histoire et Dialogues :</label>
-    <textarea id="storyInput" rows="3" placeholder="Ex: Mapinga Kasongo en plein combat..."></textarea>
-
-    <label>2. Importer l'image de ton Manga :</label>
-    <button class="btn-option" onclick="document.getElementById('mediaUpload').click()">📁 Choisir l'image principale</button>
-    <input type="file" id="mediaUpload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
-
-    <label>3. Durée de l'animation (secondes) :</label>
-    <input type="number" id="durationInput" min="3" max="60" value="10">
-
-    <button class="btn-play" onclick="startLiveAnimation()">▶ Lancer l'Animation Live</button>
-
-    <!-- Écran TV / Canevas Animé -->
-    <div class="tv-player">
-        <canvas id="animCanvas" width="600" height="350"></canvas>
+    <div class="main-container">
+        <!-- Jeu 1 -->
+        <div class="game-card">
+            <div class="game-screen">🎮 GTA San Andreas</div>
+            <div class="game-title">GTA San Andreas</div>
+            <button class="btn-download" onclick="lancerJeu('GTA San Andreas')">Télécharger & Jouer</button>
+        </div>
+        <!-- Jeu 2 -->
+        <div class="game-screen-card game-card">
+            <div class="game-screen">⚽ Foot 2028</div>
+            <div class="game-title">Super League 2028</div>
+            <button class="btn-download" onclick="lancerJeu('Super League 2028')">Télécharger & Jouer</button>
+        </div>
+        <!-- Jeu 3 -->
+        <div class="game-card">
+            <div class="game-screen">⚡ Naruto Storm</div>
+            <div class="game-title">Ninja Mobile</div>
+            <button class="btn-download" onclick="lancerJeu('Ninja Mobile')">Télécharger & Jouer</button>
+        </div>
     </div>
 
-    <div class="status-box" id="statusBox">
-        Statut : Prêt. Choisis ton image, écris ton texte et lance la lecture.
+    <!-- Interface du Lecteur de Jeu en Mode Paysage (PSP / PS Style) -->
+    <div id="game-emulator-screen">
+        <div class="emulator-top-bar">
+            <button class="btn-back" onclick="quitterJeu()">Quitter ⬅</button>
+            <div id="active-game-title" style="font-weight: bold; color: #60a5fa;">Jeu en cours</div>
+            <div style="font-size: 12px; color: #10b981;">● Mode Hors Ligne</div>
+        </div>
+
+        <!-- Grand écran horizontal du jeu -->
+        <div class="emulator-viewport" id="viewport-screen">
+            Jeu en cours d'exécution... Profite de l'écran large !
+        </div>
+
+        <!-- Boutons de manette tactiles façon console portable -->
+        <div class="emulator-controls">
+            <!-- Croix directionnelle à gauche -->
+            <div class="d-pad">
+                <div></div><div class="ps-btn">⬆️</div><div></div>
+                <div class="ps-btn">⬅️</div><div style="width:40px;height:40px;"></div><div class="ps-btn">➡️</div>
+                <div></div><div class="ps-btn">⬇️</div><div></div>
+            </div>
+
+            <!-- Boutons d'action à droite (Carré, Croix, Rond, Triangle) -->
+            <div class="action-buttons">
+                <div></div><div class="ps-btn">🔺</div><div></div>
+                <div class="ps-btn">⬛</div><div style="width:40px;height:40px;"></div><div class="ps-btn">⭕</div>
+                <div></div><div class="ps-btn">❌</div><div></div>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-    const canvas = document.getElementById('animCanvas');
-    const ctx = canvas.getContext('2d');
-    let uploadedImage = null;
-    let animationId = null;
-
-    // Image par défaut au démarrage
-    let currentImage = new Image();
-    currentImage.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='350' fill='%23111'><rect width='600' height='350'/><text x='300' y='175' fill='%23ff9800' font-size='18' text-anchor='middle'>Aucune image chargée</text></svg>";
-    currentImage.onload = () => {
-        ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
-    };
-
-    function handleImageUpload(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    uploadedImage = img;
-                    currentImage = img;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
-                    document.getElementById('statusBox').innerHTML = "✅ Image chargée avec succès dans le studio !";
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function startLiveAnimation() {
-        if (animationId) cancelAnimationFrame(animationId);
-
-        const story = document.getElementById('storyInput').value;
-        const durationSec = parseInt(document.getElementById('durationInput').value) || 10;
-        const statusBox = document.getElementById('statusBox');
-
-        statusBox.innerHTML = "▶ Lecture de l'animation en cours...";
-
-        let startTime = null;
-        let imgToDraw = uploadedImage || currentImage;
-
-        function animateFrame(timestamp) {
-            if (!startTime) startTime = timestamp;
-            let elapsed = (timestamp - startTime) / 1000;
-
-            if (elapsed < durationSec) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Effet de zoom fluide (Ken Burns)
-                let scale = 1 + (elapsed * 0.015);
-                let w = canvas.width * scale;
-                let h = canvas.height * scale;
-                let x = (canvas.width - w) / 2;
-                let y = (canvas.height - h) / 2;
-
-                ctx.save();
-                ctx.drawImage(imgToDraw, x, y, w, h);
-                ctx.restore();
-
-                // Bandeau sous-titre en bas
-                ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-                ctx.fillRect(0, canvas.height - 55, canvas.width, 55);
-
-                ctx.fillStyle = "#ffeb3b";
-                ctx.font = "bold 14px Arial";
-                ctx.textAlign = "center";
-                let displayText = story ? story : "Épisode Manga - Yala Creator";
-                ctx.fillText(displayText, canvas.width / 2, canvas.height - 20);
-
-                animationId = requestAnimationFrame(animateFrame);
-            } else {
-                statusBox.innerHTML = "✅ Lecture terminée ! Tu peux relancer ou enregistrer ton écran.";
+    <script>
+        function lancerJeu(nomDuJeu) {
+            // Affiche l'écran de jeu horizontal plein écran
+            document.getElementById('active-game-title').innerText = nomDuJeu;
+            document.getElementById('game-emulator-screen').style.display = 'flex';
+            
+            // Tentative de verrouillage de l'écran en mode paysage sur mobile (si supporté par le navigateur)
+            if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(function() {
+                    // Ignorer si non supporté ou refusé par le navigateur
+                });
             }
         }
 
-        animationId = requestAnimationFrame(animateFrame);
-    }
-</script>
+        function quitterJeu() {
+            // Ferme l'émulateur et revient au menu
+            document.getElementById('game-emulator-screen').style.display = 'none';
+        }
+    </script>
 
 </body>
 </html>
