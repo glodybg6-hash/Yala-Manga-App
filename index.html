@@ -1,2013 +1,266 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,
-initial-scale=1.0,
-maximum-scale=1.0,
-user-scalable=no">
-
-<title>GAME OVER - PS5 Mobile</title>
-
-<style>
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    background: #050609;
-    color: white;
-    font-family: Arial, sans-serif;
-    overflow-x: hidden;
-}
-
-/* =========================
-   HEADER
-========================= */
-
-header {
-    height: 65px;
-    background: #090b11;
-    border-bottom: 1px solid #252a38;
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding: 0 15px;
-
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
-
-.logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.logoIcon {
-    width: 38px;
-    height: 38px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 10px;
-
-    background:
-    linear-gradient(135deg,
-    #6258ff,
-    #00bfff);
-}
-
-.headerButtons {
-    display: flex;
-    gap: 8px;
-}
-
-.headerButton {
-    width: 40px;
-    height: 40px;
-
-    border: 1px solid #33394b;
-    border-radius: 10px;
-
-    background: #161a25;
-    color: white;
-
-    font-size: 18px;
-}
-
-/* =========================
-   NAVIGATION
-========================= */
-
-nav {
-    display: flex;
-    gap: 8px;
-
-    padding: 13px;
-
-    overflow-x: auto;
-}
-
-.navButton {
-    flex: 0 0 auto;
-
-    border: 1px solid #343a4c;
-
-    background: #12151e;
-    color: #c7cad5;
-
-    padding: 10px 16px;
-
-    border-radius: 20px;
-}
-
-.navButton.active {
-    background: #5548e8;
-    color: white;
-    border-color: #7469ff;
-}
-
-/* =========================
-   HERO
-========================= */
-
-.hero {
-    margin: 10px 15px 25px;
-
-    min-height: 240px;
-
-    border-radius: 24px;
-
-    padding: 25px;
-
-    display: flex;
-    align-items: flex-end;
-
-    position: relative;
-    overflow: hidden;
-
-    background:
-    linear-gradient(
-        90deg,
-        rgba(0,0,0,.95),
-        rgba(0,0,0,.35)
-    ),
-    linear-gradient(
-        135deg,
-        #242a68,
-        #07516c
-    );
-}
-
-.heroContent {
-    position: relative;
-    z-index: 2;
-}
-
-.hero h1 {
-    font-size: 42px;
-    margin-bottom: 8px;
-}
-
-.hero p {
-    color: #d0d3dd;
-    line-height: 1.5;
-    margin-bottom: 18px;
-}
-
-.primaryButton {
-    background:
-    linear-gradient(
-        135deg,
-        #6559ff,
-        #00aeea
-    );
-
-    border: none;
-
-    color: white;
-
-    font-weight: bold;
-
-    padding: 13px 20px;
-
-    border-radius: 12px;
-}
-
-/* =========================
-   SECTION
-========================= */
-
-.section {
-    padding: 0 15px;
-    margin-bottom: 35px;
-}
-
-.sectionTitle {
-    display: flex;
-    justify-content: space-between;
-
-    margin-bottom: 15px;
-}
-
-.sectionTitle h2 {
-    font-size: 21px;
-}
-
-.sectionTitle span {
-    color: #858b9d;
-    font-size: 13px;
-}
-
-/* =========================
-   GAME GRID
-========================= */
-
-.games {
-    display: grid;
-
-    grid-template-columns:
-    repeat(2, minmax(0,1fr));
-
-    gap: 13px;
-}
-
-.gameCard {
-    background:
-    linear-gradient(
-        145deg,
-        #171a25,
-        #0e1017
-    );
-
-    border: 1px solid #292e3e;
-
-    border-radius: 17px;
-
-    overflow: hidden;
-
-    transition: .15s;
-}
-
-.gameCard:active {
-    transform: scale(.97);
-}
-
-/* IMAGE */
-
-.gameImage {
-    width: 100%;
-    height: 230px;
-
-    background: #111;
-
-    overflow: hidden;
-
-    position: relative;
-}
-
-.gameImage img {
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-
-    display: block;
-}
-
-/* PS5 LABEL */
-
-.ps5Label {
-    position: absolute;
-
-    top: 8px;
-    left: 8px;
-
-    background: #111;
-
-    color: white;
-
-    font-size: 10px;
-
-    padding: 5px 7px;
-
-    border-radius: 5px;
-
-    font-weight: bold;
-}
-
-/* GAME INFO */
-
-.gameInfo {
-    padding: 11px;
-}
-
-.gameName {
-    font-size: 15px;
-    font-weight: bold;
-
-    margin-bottom: 5px;
-}
-
-.gameCategory {
-    color: #858b9d;
-
-    font-size: 11px;
-
-    margin-bottom: 10px;
-}
-
-.gameButtons {
-    display: flex;
-    gap: 6px;
-}
-
-.gameButtons button {
-    flex: 1;
-
-    padding: 9px 4px;
-
-    border-radius: 8px;
-
-    border: 1px solid #373d51;
-
-    background: #202432;
-
-    color: white;
-
-    font-size: 11px;
-}
-
-.gameButtons .play {
-    background: #5548e8;
-    border-color: #5548e8;
-}
-
-/* =========================
-   GAME SCREEN
-========================= */
-
-#gameScreen {
-
-    display: none;
-
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 99999;
-
-    background: #000;
-
-    color: white;
-}
-
-.gameHeader {
-
-    height: 55px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding: 7px 14px;
-
-    background: #0b0d13;
-}
-
-.quitButton {
-
-    background: #f13f43;
-
-    border: none;
-
-    color: white;
-
-    font-weight: bold;
-
-    padding: 10px 16px;
-
-    border-radius: 8px;
-}
-
-.onlineStatus {
-    color: #00d084;
-}
-
-/* =========================
-   PLAY AREA
-========================= */
-
-.playArea {
-
-    width: 100%;
-
-    height:
-    calc(100vh - 55px);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding: 12px;
-
-    gap: 10px;
-}
-
-/* GAME SCREEN CENTER */
-
-.gameDisplay {
-
-    flex: 1;
-
-    height: 92%;
-
-    max-width: 900px;
-
-    border:
-    3px solid #287cff;
-
-    border-radius: 15px;
-
-    overflow: hidden;
-
-    position: relative;
-
-    background: #111;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-}
-
-.gameDisplay img {
-
-    width: 100%;
-
-    height: 100%;
-
-    object-fit: cover;
-
-    opacity: .35;
-}
-
-.gameMessage {
-
-    position: absolute;
-
-    text-align: center;
-
-    font-size: 24px;
-
-    font-weight: bold;
-
-    text-shadow:
-    0 2px 10px black;
-}
-
-/* =========================
-   CONTROLS
-========================= */
-
-.controls {
-
-    width: 145px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    gap: 10px;
-}
-
-.shoulderRow {
-
-    display: flex;
-
-    gap: 7px;
-}
-
-.shoulder {
-
-    min-width: 55px;
-
-    padding: 10px 8px;
-
-    border-radius: 9px;
-
-    background: #151a24;
-
-    color: white;
-
-    border:
-    2px solid #287cff;
-
-    font-weight: bold;
-}
-
-/* D PAD */
-
-.dpad {
-
-    display: grid;
-
-    grid-template-columns:
-    42px 42px 42px;
-
-    grid-template-rows:
-    42px 42px 42px;
-
-    gap: 3px;
-}
-
-.dpad button {
-
-    border: 1px solid #59657a;
-
-    border-radius: 50%;
-
-    background: #202633;
-
-    color: white;
-
-    font-size: 19px;
-}
-
-.dpad button:nth-child(1) {
-    grid-column: 2;
-}
-
-.dpad button:nth-child(2) {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.dpad button:nth-child(3) {
-    grid-column: 2;
-    grid-row: 2;
-}
-
-.dpad button:nth-child(4) {
-    grid-column: 3;
-    grid-row: 2;
-}
-
-.dpad button:nth-child(5) {
-    grid-column: 2;
-    grid-row: 3;
-}
-
-/* ACTION BUTTONS */
-
-.actionButtons {
-
-    display: grid;
-
-    grid-template-columns:
-    43px 43px 43px;
-
-    grid-template-rows:
-    43px 43px 43px;
-
-    gap: 4px;
-}
-
-.actionButtons button {
-
-    width: 43px;
-    height: 43px;
-
-    border-radius: 50%;
-
-    border:
-    1px solid #5b6376;
-
-    background: #202633;
-
-    color: white;
-
-    font-size: 18px;
-
-    font-weight: bold;
-}
-
-.triangle {
-    grid-column: 2;
-}
-
-.square {
-    grid-column: 1;
-    grid-row: 2;
-}
-
-.circle {
-    grid-column: 3;
-    grid-row: 2;
-}
-
-.cross {
-    grid-column: 2;
-    grid-row: 3;
-}
-
-/* =========================
-   SETTINGS
-========================= */
-
-#settings {
-
-    display: none;
-
-    padding: 20px;
-}
-
-.settingBox {
-
-    background: #141720;
-
-    border: 1px solid #2c3243;
-
-    border-radius: 15px;
-
-    padding: 15px;
-
-    margin-bottom: 15px;
-}
-
-.settingRow {
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    padding: 15px 0;
-
-    border-bottom:
-    1px solid #292e3d;
-}
-
-.settingRow:last-child {
-    border-bottom: none;
-}
-
-.switch {
-
-    width: 46px;
-    height: 25px;
-
-    border-radius: 20px;
-
-    background: #373c4b;
-
-    position: relative;
-}
-
-.switch::after {
-
-    content: "";
-
-    width: 19px;
-    height: 19px;
-
-    background: white;
-
-    border-radius: 50%;
-
-    position: absolute;
-
-    left: 3px;
-    top: 3px;
-
-    transition: .2s;
-}
-
-.switch.on {
-    background: #5548e8;
-}
-
-.switch.on::after {
-    left: 24px;
-}
-
-/* =========================
-   LANDSCAPE WARNING
-========================= */
-
-@media (orientation: portrait) {
-
-    #gameScreen::before {
-
-        content:
-        "↻ Tourne ton téléphone horizontalement";
-
-        position: absolute;
-
-        inset: 0;
-
-        background: #000;
-
-        z-index: 100000;
-
-        display: flex;
-
-        align-items: center;
-
-        justify-content: center;
-
-        text-align: center;
-
-        font-size: 20px;
-
-        font-weight: bold;
-    }
-}
-
-/* =========================
-   DESKTOP
-========================= */
-
-@media (min-width: 700px) {
-
-    .games {
-
-        grid-template-columns:
-        repeat(5,1fr);
-    }
-
-    .gameImage {
-        height: 270px;
-    }
-
-    .hero {
-
-        max-width: 1200px;
-
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .section {
-
-        max-width: 1200px;
-
-        margin-left: auto;
-        margin-right: auto;
-    }
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yala Creator - Studio Vidéo Manga</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0b0b0b;
+            color: #ffffff;
+            margin: 0;
+            padding: 15px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #161616;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+        }
+        h1 {
+            color: #ff9800;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 15px;
+            color: #ffb74d;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+        .tv-player {
+            width: 100%;
+            height: 280px;
+            background: #000;
+            border: 4px solid #ff9800;
+            border-radius: 12px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #animCanvas {
+            width: 100%;
+            height: 100%;
+            background: #111;
+            object-fit: contain;
+        }
+        .btn-option {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            background-color: #9c27b0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-generate {
+            background-color: #ff9800;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn-download {
+            background-color: #4CAF50;
+            color: white;
+            display: none;
+            width: 100%;
+            margin-top: 15px;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            box-sizing: border-box;
+        }
+        .status-box {
+            background: #1f1f1f;
+            padding: 12px;
+            border-left: 4px solid #ff9800;
+            margin-top: 15px;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #bbb;
+        }
+    </style>
 </head>
-
-
 <body>
 
-<!-- =========================
-     HEADER
-========================= -->
+<div class="container">
+    <h1>Yala Creator</h1>
+    <div class="subtitle">Studio Manga — Générateur de Vidéos Animées</div>
 
-<header>
+    <label>1. Texte de l'histoire et Dialogues :</label>
+    <textarea id="storyInput" rows="3" placeholder="Ex: Mapinga Kasongo en plein combat..."></textarea>
 
-    <div class="logo">
+    <label>2. Importer l'image de ton Manga :</label>
+    <button class="btn-option" onclick="document.getElementById('mediaUpload').click()">📁 Choisir l'image principale</button>
+    <input type="file" id="mediaUpload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
 
-        <div class="logoIcon">
-            🎮
-        </div>
+    <label>3. Durée de la vidéo (recommandé : 5 à 10 secondes) :</label>
+    <input type="number" id="durationInput" min="3" max="15" value="6">
 
-        GAME OVER
+    <button class="btn-generate" onclick="startVideoGeneration()">🎬 Créer et Enregistrer la Vidéo</button>
 
+    <!-- Écran TV / Canevas Animé -->
+    <div class="tv-player">
+        <canvas id="animCanvas" width="600" height="350"></canvas>
     </div>
 
-    <div class="headerButtons">
+    <a id="downloadVideoBtn" class="btn-download">📥 Télécharger la Vidéo (.webm)</a>
 
-        <button
-        class="headerButton"
-        onclick="toggleFullscreen()">
-        ⛶
-        </button>
-
-        <button
-        class="headerButton"
-        onclick="showSettings()">
-        ⚙️
-        </button>
-
+    <div class="status-box" id="statusBox">
+        Statut : Prêt. Choisis ton image et clique sur Créer.
     </div>
-
-</header>
-
-
-<!-- =========================
-     NAV
-========================= -->
-
-<nav>
-
-    <button
-    class="navButton active"
-    onclick="filterGames('all',this)">
-    Tous
-    </button>
-
-    <button
-    class="navButton"
-    onclick="filterGames('football',this)">
-    ⚽ Football
-    </button>
-
-    <button
-    class="navButton"
-    onclick="filterGames('gta',this)">
-    🚗 GTA
-    </button>
-
-    <button
-    class="navButton"
-    onclick="filterGames('naruto',this)">
-    🍥 Naruto
-    </button>
-
-    <button
-    class="navButton"
-    onclick="filterGames('action',this)">
-    🎮 Action
-    </button>
-
-</nav>
-
-
-<!-- =========================
-     MAIN
-========================= -->
-
-<main id="mainContent">
-
-
-<section class="hero">
-
-    <div class="heroContent">
-
-        <h1>
-            GAME OVER
-        </h1>
-
-        <p>
-            Ton espace de jeux mobile
-            avec interface inspirée de
-            PlayStation.
-        </p>
-
-        <button
-        class="primaryButton"
-        onclick="scrollToGames()">
-
-        🎮 Voir les jeux
-
-        </button>
-
-    </div>
-
-</section>
-
-
-<section
-class="section"
-id="gamesSection">
-
-    <div class="sectionTitle">
-
-        <h2>
-            🎮 Jeux PS5
-        </h2>
-
-        <span id="gameCount">
-            10 jeux
-        </span>
-
-    </div>
-
-
-    <div class="games">
-
-
-<!-- 1 -->
-
-<article
-class="gameCard"
-data-category="football">
-
-<div class="gameImage">
-
-<img
-src="images/fc26.jpg"
-alt="EA SPORTS FC 26">
-
-<span class="ps5Label">
-PS5
-</span>
-
 </div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-EA SPORTS FC 26
-</div>
-
-<div class="gameCategory">
-Football
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'EA SPORTS FC 26',
-'images/fc26.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo(
-'EA SPORTS FC 26'
-)">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 2 -->
-
-<article
-class="gameCard"
-data-category="football">
-
-<div class="gameImage">
-
-<img
-src="images/efootball.jpg"
-alt="eFootball">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-eFootball
-</div>
-
-<div class="gameCategory">
-Football
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'eFootball',
-'images/efootball.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo('eFootball')">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 3 -->
-
-<article
-class="gameCard"
-data-category="football">
-
-<div class="gameImage">
-
-<img
-src="images/fc25.jpg"
-alt="EA SPORTS FC 25">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-EA SPORTS FC 25
-</div>
-
-<div class="gameCategory">
-Football
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'EA SPORTS FC 25',
-'images/fc25.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo(
-'EA SPORTS FC 25'
-)">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 4 -->
-
-<article
-class="gameCard"
-data-category="gta">
-
-<div class="gameImage">
-
-<img
-src="images/gta5.jpg"
-alt="GTA V">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-GTA V
-</div>
-
-<div class="gameCategory">
-Action / Open World
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'GTA V',
-'images/gta5.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo('GTA V')">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 5 -->
-
-<article
-class="gameCard"
-data-category="gta">
-
-<div class="gameImage">
-
-<img
-src="images/gta-online.jpg"
-alt="GTA Online">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-GTA Online
-</div>
-
-<div class="gameCategory">
-Action / Online
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'GTA Online',
-'images/gta-online.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo(
-'GTA Online'
-)">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 6 -->
-
-<article
-class="gameCard"
-data-category="naruto">
-
-<div class="gameImage">
-
-<img
-src="images/naruto.jpg"
-alt="Naruto X Boruto">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-Naruto X Boruto
-</div>
-
-<div class="gameCategory">
-Combat / Anime
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'Naruto X Boruto',
-'images/naruto.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo(
-'Naruto X Boruto'
-)">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 7 -->
-
-<article
-class="gameCard"
-data-category="naruto">
-
-<div class="gameImage">
-
-<img
-src="images/naruto-storm.jpg"
-alt="Naruto Storm">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-Naruto Storm
-</div>
-
-<div class="gameCategory">
-Combat / Anime
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'Naruto Storm',
-'images/naruto-storm.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo(
-'Naruto Storm'
-)">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 8 -->
-
-<article
-class="gameCard"
-data-category="action">
-
-<div class="gameImage">
-
-<img
-src="images/spiderman.jpg"
-alt="Spider-Man">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-Marvel's Spider-Man
-</div>
-
-<div class="gameCategory">
-Action / Aventure
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'Marvel Spider-Man',
-'images/spiderman.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo(
-'Marvel Spider-Man'
-)">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 9 -->
-
-<article
-class="gameCard"
-data-category="action">
-
-<div class="gameImage">
-
-<img
-src="images/gran-turismo.jpg"
-alt="Gran Turismo 7">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-Gran Turismo 7
-</div>
-
-<div class="gameCategory">
-Course
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'Gran Turismo 7',
-'images/gran-turismo.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo(
-'Gran Turismo 7'
-)">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-<!-- 10 -->
-
-<article
-class="gameCard"
-data-category="action">
-
-<div class="gameImage">
-
-<img
-src="images/wwe2k.jpg"
-alt="WWE 2K">
-
-<span class="ps5Label">
-PS5
-</span>
-
-</div>
-
-<div class="gameInfo">
-
-<div class="gameName">
-WWE 2K
-</div>
-
-<div class="gameCategory">
-Combat / Sport
-</div>
-
-<div class="gameButtons">
-
-<button
-class="play"
-onclick="launchGame(
-'WWE 2K',
-'images/wwe2k.jpg'
-)">
-Jouer
-</button>
-
-<button
-onclick="gameInfo(
-'WWE 2K'
-)">
-Info
-</button>
-
-</div>
-
-</div>
-
-</article>
-
-
-    </div>
-
-</section>
-
-</main>
-
-
-<!-- =========================
-     GAME SCREEN
-========================= -->
-
-<div id="gameScreen">
-
-    <div class="gameHeader">
-
-        <button
-        class="quitButton"
-        onclick="closeGame()">
-
-        ← Quitter
-
-        </button>
-
-        <strong id="currentGame">
-        Jeu
-        </strong>
-
-        <span class="onlineStatus">
-        ● Mode jeu
-        </span>
-
-    </div>
-
-
-    <div class="playArea">
-
-
-        <!-- LEFT -->
-
-        <div class="controls">
-
-            <div class="shoulderRow">
-
-                <button
-                class="shoulder">
-                L2
-                </button>
-
-                <button
-                class="shoulder">
-                L1
-                </button>
-
-            </div>
-
-
-            <div class="dpad">
-
-                <button>▲</button>
-
-                <button>◀</button>
-
-                <button>●</button>
-
-                <button>▶</button>
-
-                <button>▼</button>
-
-            </div>
-
-        </div>
-
-
-        <!-- CENTER -->
-
-        <div class="gameDisplay">
-
-            <img
-            id="gameBackground"
-            src=""
-            alt="Jeu">
-
-            <div
-            class="gameMessage"
-            id="gameMessage">
-
-            </div>
-
-        </div>
-
-
-        <!-- RIGHT -->
-
-        <div class="controls">
-
-            <div class="shoulderRow">
-
-                <button
-                class="shoulder">
-                R1
-                </button>
-
-                <button
-                class="shoulder">
-                R2
-                </button>
-
-            </div>
-
-
-            <div class="actionButtons">
-
-                <button
-                class="triangle">
-                △
-                </button>
-
-                <button
-                class="square">
-                □
-                </button>
-
-                <button
-                class="circle">
-                ○
-                </button>
-
-                <button
-                class="cross">
-                ✕
-                </button>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================
-     SETTINGS
-========================= -->
-
-<section id="settings">
-
-    <h2>
-        ⚙️ Paramètres
-    </h2>
-
-    <br>
-
-    <div class="settingBox">
-
-        <div class="settingRow">
-
-            <span>
-            🎮 Commandes tactiles
-            </span>
-
-            <div
-            class="switch on"
-            onclick="toggleSwitch(this)">
-            </div>
-
-        </div>
-
-
-        <div class="settingRow">
-
-            <span>
-            📳 Vibration
-            </span>
-
-            <div
-            class="switch on"
-            onclick="toggleSwitch(this)">
-            </div>
-
-        </div>
-
-
-        <div class="settingRow">
-
-            <span>
-            🔊 Son
-            </span>
-
-            <div
-            class="switch on"
-            onclick="toggleSwitch(this)">
-            </div>
-
-        </div>
-
-
-        <div class="settingRow">
-
-            <span>
-            📱 Paysage
-            </span>
-
-            <button
-            class="shoulder"
-            onclick="forceLandscape()">
-
-            Activer
-
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <button
-    class="primaryButton"
-    onclick="hideSettings()">
-
-    ← Retour
-
-    </button>
-
-</section>
-
 
 <script>
-
-/* =========================
-   FILTRE
-========================= */
-
-function filterGames(category, button) {
-
-    document
-    .querySelectorAll(".navButton")
-    .forEach(
-        b => b.classList.remove("active")
-    );
-
-    button.classList.add("active");
-
-    let visible = 0;
-
-    document
-    .querySelectorAll(".gameCard")
-    .forEach(card => {
-
-        if (
-            category === "all" ||
-            card.dataset.category === category
-        ) {
-
-            card.style.display = "";
-
-            visible++;
-
-        } else {
-
-            card.style.display = "none";
-
-        }
-
-    });
-
-    document
-    .getElementById("gameCount")
-    .textContent =
-        visible +
-        (visible > 1 ? " jeux" : " jeu");
-}
-
-
-/* =========================
-   LANCER JEU
-========================= */
-
-async function launchGame(
-    name,
-    image
-) {
-
-    /* PLEIN ECRAN */
-
-    try {
-
-        if (!document.fullscreenElement) {
-
-            await document
-            .documentElement
-            .requestFullscreen();
-
-        }
-
-    } catch(e) {
-
-        console.log(
-            "Plein écran indisponible"
-        );
-
-    }
-
-
-    /* PAYSAGE */
-
-    try {
-
-        if (
-            screen.orientation &&
-            screen.orientation.lock
-        ) {
-
-            await screen.orientation
-            .lock("landscape");
-
-        }
-
-    } catch(e) {
-
-        console.log(
-            "Rotation automatique indisponible"
-        );
-
-    }
-
-
-    /* AFFICHER */
-
-    document
-    .getElementById("mainContent")
-    .style.display = "none";
-
-    document
-    .getElementById("gameScreen")
-    .style.display = "block";
-
-
-    document
-    .getElementById("currentGame")
-    .textContent = name;
-
-
-    document
-    .getElementById("gameBackground")
-    .src = image;
-
-
-    document
-    .getElementById("gameMessage")
-    .innerHTML =
-        name +
-        "<br><br>" +
-        "<span style='font-size:14px;font-weight:normal'>" +
-        "Interface prête<br>" +
-        "Connecte un vrai jeu compatible pour jouer." +
-        "</span>";
-
-}
-
-
-/* =========================
-   QUITTER
-========================= */
-
-async function closeGame() {
-
-    document
-    .getElementById("gameScreen")
-    .style.display = "none";
-
-    document
-    .getElementById("mainContent")
-    .style.display = "block";
-
-
-    try {
-
-        if (document.fullscreenElement) {
-
-            await document.exitFullscreen();
-
-        }
-
-    } catch(e) {}
-
-}
-
-
-/* =========================
-   PLEIN ECRAN
-========================= */
-
-async function toggleFullscreen() {
-
-    try {
-
-        if (!document.fullscreenElement) {
-
-            await document
-            .documentElement
-            .requestFullscreen();
-
-        } else {
-
-            await document.exitFullscreen();
-
-        }
-
-    } catch(e) {}
-
-}
-
-
-/* =========================
-   PAYSAGE
-========================= */
-
-async function forceLandscape() {
-
-    try {
-
-        await screen.orientation
-        .lock("landscape");
-
-    } catch(e) {
-
-        alert(
-            "Tourne simplement ton téléphone horizontalement."
-        );
-
-    }
-
-}
-
-
-/* =========================
-   SETTINGS
-========================= */
-
-function showSettings() {
-
-    document
-    .getElementById("mainContent")
-    .style.display = "none";
-
-    document
-    .getElementById("settings")
-    .style.display = "block";
-
-    window.scrollTo(0,0);
-}
-
-
-function hideSettings() {
-
-    document
-    .getElementById("settings")
-    .style.display = "none";
-
-    document
-    .getElementById("mainContent")
-    .style.display = "block";
-}
-
-
-function toggleSwitch(element) {
-
-    element
-    .classList
-    .toggle("on");
-
-    if (
-        navigator.vibrate &&
-        element.classList.contains("on")
-    ) {
-
-        navigator.vibrate(20);
-
-    }
-
-}
-
-
-/* =========================
-   INFO
-========================= */
-
-function gameInfo(name) {
-
-    alert(
-        "🎮 " +
-        name +
-        "\\n\\n" +
-        "Jeu présenté dans GAME OVER."
-    );
-
-}
-
-
-/* =========================
-   SCROLL
-========================= */
-
-function scrollToGames() {
-
-    document
-    .getElementById("gamesSection")
-    .scrollIntoView({
-        behavior: "smooth"
-    });
-
-}
-
-
-/* =========================
-   GAMEPAD
-========================= */
-
-window.addEventListener(
-"gamepadconnected",
-function(event) {
-
-    console.log(
-        "🎮 Manette connectée :",
-        event.gamepad.id
-    );
-
-    alert(
-        "🎮 Manette détectée !"
-    );
-
-    readGamepad();
-
-});
-
-
-function readGamepad() {
-
-    function loop() {
-
-        const pads =
-            navigator.getGamepads
-            ? navigator.getGamepads()
-            : [];
-
-        const pad = pads[0];
-
-        if (pad) {
-
-            if (pad.buttons[0]?.pressed) {
-                console.log("✕");
+    const canvas = document.getElementById('animCanvas');
+    const ctx = canvas.getContext('2d');
+    let uploadedImage = null;
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    // Affichage d'un fond par défaut propre au démarrage
+    let currentImage = new Image();
+    currentImage.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='350' fill='%23111'><rect width='600' height='350'/><text x='300' y='175' fill='%23ff9800' font-size='18' text-anchor='middle'>Aucune image chargée</text></svg>";
+    currentImage.onload = () => {
+        ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+    };
+
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    uploadedImage = img;
+                    currentImage = img;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+                    document.getElementById('statusBox').innerHTML = "✅ Image chargée et affichée dans le studio !";
+                }
+                img.src = e.target.result;
             }
-
-            if (pad.buttons[1]?.pressed) {
-                console.log("○");
-            }
-
-            if (pad.buttons[2]?.pressed) {
-                console.log("□");
-            }
-
-            if (pad.buttons[3]?.pressed) {
-                console.log("△");
-            }
-
+            reader.readAsDataURL(file);
         }
-
-        requestAnimationFrame(loop);
-
     }
 
-    loop();
+    function startVideoGeneration() {
+        const story = document.getElementById('storyInput').value;
+        const durationSec = parseInt(document.getElementById('durationInput').value) || 6;
+        const statusBox = document.getElementById('statusBox');
+        const downloadBtn = document.getElementById('downloadVideoBtn');
 
-}
+        downloadBtn.style.display = "none";
+        statusBox.innerHTML = "⏳ Génération et enregistrement de la vidéo en cours...";
 
+        // Capture du flux vidéo depuis le canvas
+        const stream = canvas.captureStream(30);
+        recordedChunks = [];
+        
+        try {
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+        } catch (e) {
+            try {
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            } catch (err) {
+                mediaRecorder = new MediaRecorder(stream);
+            }
+        }
 
-window.addEventListener(
-"gamepaddisconnected",
-function() {
+        mediaRecorder.ondataavailable = function(event) {
+            if (event.data.size > 0) {
+                recordedChunks.push(event.data);
+            }
+        };
 
-    console.log(
-        "🎮 Manette déconnectée"
-    );
+        mediaRecorder.onstop = function() {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            const videoUrl = URL.createObjectURL(blob);
+            downloadBtn.href = videoUrl;
+            downloadBtn.style.display = "block";
+            statusBox.innerHTML = "✅ Vidéo générée avec succès ! Clique sur le bouton vert pour la télécharger.";
+        };
 
-});
+        mediaRecorder.start();
 
+        let startTime = null;
+        let imgToDraw = uploadedImage || currentImage;
+
+        function animateFrame(timestamp) {
+            if (!startTime) startTime = timestamp;
+            let elapsed = (timestamp - startTime) / 1000;
+
+            if (elapsed < durationSec) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Effet de zoom fluide sur l'image
+                let scale = 1 + (elapsed * 0.02);
+                let w = canvas.width * scale;
+                let h = canvas.height * scale;
+                let x = (canvas.width - w) / 2;
+                let y = (canvas.height - h) / 2;
+
+                ctx.save();
+                ctx.drawImage(imgToDraw, x, y, w, h);
+                ctx.restore();
+
+                // Bandeau texte en bas
+                ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+                ctx.fillRect(0, canvas.height - 55, canvas.width, 55);
+
+                ctx.fillStyle = "#ffeb3b";
+                ctx.font = "bold 14px Arial";
+                ctx.textAlign = "center";
+                let displayText = story ? story : "Épisode Manga - Yala Creator";
+                ctx.fillText(displayText, canvas.width / 2, canvas.height - 20);
+
+                requestAnimationFrame(animateFrame);
+            } else {
+                mediaRecorder.stop();
+            }
+        }
+
+        requestAnimationFrame(animateFrame);
+    }
 </script>
 
 </body>
-    </html>
+</html>
