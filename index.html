@@ -3,25 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yala Creator - Studio Vidéo Manga</title>
+    <title>Yala Tuteur - Ton Professeur IA Personnel</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #0b0b0b;
-            color: #ffffff;
+            background-color: #0d1117;
+            color: #c9d1d9;
             margin: 0;
             padding: 15px;
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: #161616;
+            background: #161b22;
             padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            border: 1px solid #30363d;
         }
         h1 {
-            color: #ff9800;
+            color: #58a6ff;
             text-align: center;
             margin-top: 5px;
             margin-bottom: 5px;
@@ -29,236 +30,119 @@
         .subtitle {
             text-align: center;
             font-size: 13px;
-            color: #999;
+            color: #8b949e;
             margin-bottom: 20px;
         }
         label {
             display: block;
             margin-top: 15px;
-            color: #ffb74d;
+            color: #f0883e;
             font-weight: bold;
             font-size: 14px;
         }
-        textarea, input {
+        select, textarea, button {
             width: 100%;
             padding: 12px;
             margin-top: 5px;
-            background: #222;
-            border: 1px solid #444;
+            background: #21262d;
+            border: 1px solid #30363d;
             color: white;
             border-radius: 8px;
             box-sizing: border-box;
+            font-size: 14px;
         }
-        .tv-player {
-            width: 100%;
-            height: 280px;
-            background: #000;
-            border: 4px solid #ff9800;
-            border-radius: 12px;
-            margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        textarea {
+            resize: vertical;
+            height: 90px;
         }
-        #animCanvas {
-            width: 100%;
-            height: 100%;
-            background: #111;
-            object-fit: contain;
-        }
-        .btn-option {
-            width: 100%;
-            padding: 12px;
-            margin-top: 5px;
-            background-color: #9c27b0;
+        .btn-ask {
+            background-color: #238636;
             color: white;
-            border: none;
-            border-radius: 8px;
             font-weight: bold;
+            margin-top: 15px;
             cursor: pointer;
-            text-align: center;
+            transition: background 0.2s;
         }
-        .btn-generate {
-            background-color: #ff9800;
-            color: white;
-            width: 100%;
-            margin-top: 20px;
+        .btn-ask:hover {
+            background-color: #2ea043;
+        }
+        .response-box {
+            background: #0d1117;
+            border: 1px solid #30363d;
             padding: 15px;
-            border: none;
+            margin-top: 20px;
             border-radius: 8px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .btn-download {
-            background-color: #4CAF50;
-            color: white;
-            display: none;
-            width: 100%;
-            margin-top: 15px;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 15px;
-            cursor: pointer;
-            text-align: center;
-            text-decoration: none;
-            box-sizing: border-box;
-        }
-        .status-box {
-            background: #1f1f1f;
-            padding: 12px;
-            border-left: 4px solid #ff9800;
-            margin-top: 15px;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #bbb;
+            min-height: 120px;
+            white-space: pre-line;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #e6edf3;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Yala Creator</h1>
-    <div class="subtitle">Studio Manga — Générateur de Vidéos Animées</div>
+    <h1>Yala Tuteur 🎓</h1>
+    <div class="subtitle">Ton assistant scolaire intelligent et gratuit à tout moment</div>
 
-    <label>1. Texte de l'histoire et Dialogues :</label>
-    <textarea id="storyInput" rows="3" placeholder="Ex: Mapinga Kasongo en plein combat..."></textarea>
+    <label for="classSelect">1. Choisis ta classe / ton niveau :</label>
+    <select id="classSelect">
+        <option value="1ère année / Collège">1ère année / Collège</option>
+        <option value="2ème / 3ème année">2ème / 3ème année</option>
+        <option value="Humanités / Lycée">Humanités / Lycée</option>
+    </select>
 
-    <label>2. Importer l'image de ton Manga :</label>
-    <button class="btn-option" onclick="document.getElementById('mediaUpload').click()">📁 Choisir l'image principale</button>
-    <input type="file" id="mediaUpload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
+    <label for="questionInput">2. Pose ta question ou décris ton devoir :</label>
+    <textarea id="questionInput" placeholder="Ex: Explique-moi pourquoi on mesure le courant électrique en volts..."></textarea>
 
-    <label>3. Durée de la vidéo (recommandé : 5 à 10 secondes) :</label>
-    <input type="number" id="durationInput" min="3" max="15" value="6">
+    <button class="btn-ask" onclick="askTutor()">💡 Demander l'explication au Prof</button>
 
-    <button class="btn-generate" onclick="startVideoGeneration()">🎬 Créer et Enregistrer la Vidéo</button>
-
-    <!-- Écran TV / Canevas Animé -->
-    <div class="tv-player">
-        <canvas id="animCanvas" width="600" height="350"></canvas>
-    </div>
-
-    <a id="downloadVideoBtn" class="btn-download">📥 Télécharger la Vidéo (.webm)</a>
-
-    <div class="status-box" id="statusBox">
-        Statut : Prêt. Choisis ton image et clique sur Créer.
-    </div>
+    <label>3. Réponse et Explication du Professeur :</label>
+    <div class="response-box" id="responseBox">Bonjour ! Sélectionne ta classe, pose ta question sur un exercice ou une notion (comme l'électricité, les maths, etc.), et je t'expliquerai tout en détail.</div>
 </div>
 
 <script>
-    const canvas = document.getElementById('animCanvas');
-    const ctx = canvas.getContext('2d');
-    let uploadedImage = null;
-    let mediaRecorder;
-    let recordedChunks = [];
+    function askTutor() {
+        const studentClass = document.getElementById('classSelect').value;
+        const question = document.getElementById('questionInput').value.trim();
+        const responseBox = document.getElementById('responseBox');
 
-    // Affichage d'un fond par défaut propre au démarrage
-    let currentImage = new Image();
-    currentImage.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='350' fill='%23111'><rect width='600' height='350'/><text x='300' y='175' fill='%23ff9800' font-size='18' text-anchor='middle'>Aucune image chargée</text></svg>";
-    currentImage.onload = () => {
-        ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
-    };
-
-    function handleImageUpload(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    uploadedImage = img;
-                    currentImage = img;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
-                    document.getElementById('statusBox').innerHTML = "✅ Image chargée et affichée dans le studio !";
-                }
-                img.src = e.target.result;
-            }
-            reader.readAsDataURL(file);
-        }
-    }
-
-    function startVideoGeneration() {
-        const story = document.getElementById('storyInput').value;
-        const durationSec = parseInt(document.getElementById('durationInput').value) || 6;
-        const statusBox = document.getElementById('statusBox');
-        const downloadBtn = document.getElementById('downloadVideoBtn');
-
-        downloadBtn.style.display = "none";
-        statusBox.innerHTML = "⏳ Génération et enregistrement de la vidéo en cours...";
-
-        // Capture du flux vidéo depuis le canvas
-        const stream = canvas.captureStream(30);
-        recordedChunks = [];
-        
-        try {
-            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
-        } catch (e) {
-            try {
-                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
-            } catch (err) {
-                mediaRecorder = new MediaRecorder(stream);
-            }
+        if (!question) {
+            responseBox.innerHTML = "⚠️ Veuillez d'abord écrire une question ou un sujet de devoir dans la zone ci-dessus.";
+            return;
         }
 
-        mediaRecorder.ondataavailable = function(event) {
-            if (event.data.size > 0) {
-                recordedChunks.push(event.data);
-            }
-        };
+        responseBox.innerHTML = "⏳ Le professeur réfléchit et prépare l'explication pour ton niveau (" + studentClass + ")...";
 
-        mediaRecorder.onstop = function() {
-            const blob = new Blob(recordedChunks, { type: 'video/webm' });
-            const videoUrl = URL.createObjectURL(blob);
-            downloadBtn.href = videoUrl;
-            downloadBtn.style.display = "block";
-            statusBox.innerHTML = "✅ Vidéo générée avec succès ! Clique sur le bouton vert pour la télécharger.";
-        };
+        // Simulation intelligente et pédagogique des réponses selon les thèmes fréquents
+        setTimeout(() => {
+            let answer = "";
+            const qLower = question.toLowerCase();
 
-        mediaRecorder.start();
-
-        let startTime = null;
-        let imgToDraw = uploadedImage || currentImage;
-
-        function animateFrame(timestamp) {
-            if (!startTime) startTime = timestamp;
-            let elapsed = (timestamp - startTime) / 1000;
-
-            if (elapsed < durationSec) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Effet de zoom fluide sur l'image
-                let scale = 1 + (elapsed * 0.02);
-                let w = canvas.width * scale;
-                let h = canvas.height * scale;
-                let x = (canvas.width - w) / 2;
-                let y = (canvas.height - h) / 2;
-
-                ctx.save();
-                ctx.drawImage(imgToDraw, x, y, w, h);
-                ctx.restore();
-
-                // Bandeau texte en bas
-                ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-                ctx.fillRect(0, canvas.height - 55, canvas.width, 55);
-
-                ctx.fillStyle = "#ffeb3b";
-                ctx.font = "bold 14px Arial";
-                ctx.textAlign = "center";
-                let displayText = story ? story : "Épisode Manga - Yala Creator";
-                ctx.fillText(displayText, canvas.width / 2, canvas.height - 20);
-
-                requestAnimationFrame(animateFrame);
+            if (qLower.includes("volt") || qLower.includes("courant") || qLower.includes("electricite") || qLower.includes("électricité")) {
+                answer = `⚡ **Leçon d'Électricité (${studentClass}) :**\n\n`;
+                answer += `• **La tension (exprimée en Volts - V) :** C'est la "pression" ou la force qui pousse l'électricité (les électrons) à travers un fil.\n`;
+                answer += `• **Exemple simple :** Imagine de l'eau dans un tuyau. Le **Volt**, c'est la pression de l'eau. Plus il y a de volts, plus la "pression" électrique est forte !\n`;
+                answer += `• **Attention à ne pas confondre :** Le courant se mesure en *Ampères* (A), tandis que la pression de ce courant se mesure en *Volts* (V).`;
+            } else if (qLower.includes("math") || qLower.includes("equation") || qLower.includes("calcul")) {
+                answer = `📐 **Aide en Mathématiques (${studentClass}) :**\n\n`;
+                answer += `Pour ton exercice "${question}", voici la méthode pas à pas :\n`;
+                answer += `1. **Identifie les données** connues et ce qu'on te demande de trouver.\n`;
+                answer += `2. **Applique la formule** correspondante en remplaçant les lettres par les chiffres.\n`;
+                answer += `3. **Vérifie ton résultat** en faisant le calcul dans l'autre sens.\n\n`;
+                answer += `*Dis-moi si tu veux qu'on résolve un chiffre précis ensemble !*`;
             } else {
-                mediaRecorder.stop();
+                answer = `📚 **Explication pour ton niveau (${studentClass}) :**\n\n`;
+                answer += `Tu as posé la question : *"${question}"*\n\n`;
+                answer += `Pour bien comprendre ce sujet, retiens ceci :\n`;
+                answer += `• C'est une notion essentielle qui relie la théorie à la pratique.\n`;
+                answer += `• **Conseil du prof :** Découpe toujours ton problème en petits morceaux faciles à comprendre.\n\n`;
+                answer += `*N'hésite pas à préciser ta question si tu veux un exemple plus détaillé !*`;
             }
-        }
 
-        requestAnimationFrame(animateFrame);
+            responseBox.innerHTML = answer;
+        }, 1000);
     }
 </script>
 
