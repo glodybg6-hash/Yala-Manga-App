@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yala Tuteur - Ton Professeur IA Personnel</title>
+    <title>Yala Creator - Studio Manga & IA</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             background-color: #0d1117;
-            color: #c9d1d9;
+            color: #ffffff;
             margin: 0;
             padding: 15px;
         }
@@ -17,15 +17,16 @@
             margin: 0 auto;
             background: #161b22;
             padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.8);
             border: 1px solid #30363d;
         }
         h1 {
-            color: #58a6ff;
+            color: #ff9f43;
             text-align: center;
             margin-top: 5px;
             margin-bottom: 5px;
+            font-size: 24px;
         }
         .subtitle {
             text-align: center;
@@ -36,113 +37,94 @@
         label {
             display: block;
             margin-top: 15px;
-            color: #f0883e;
+            color: #ffa502;
             font-weight: bold;
             font-size: 14px;
         }
-        select, textarea, button {
+        textarea, input, select {
             width: 100%;
             padding: 12px;
             margin-top: 5px;
             background: #21262d;
             border: 1px solid #30363d;
             color: white;
-            border-radius: 8px;
+            border-radius: 10px;
             box-sizing: border-box;
             font-size: 14px;
         }
-        textarea {
-            resize: vertical;
-            height: 90px;
+        .player-box {
+            width: 100%;
+            height: 280px;
+            background: #000;
+            border: 3px solid #ff9f43;
+            border-radius: 14px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
-        .btn-ask {
-            background-color: #238636;
-            color: white;
-            font-weight: bold;
-            margin-top: 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-ask:hover {
-            background-color: #2ea043;
-        }
-        .response-box {
-            background: #0d1117;
-            border: 1px solid #30363d;
+        .btn-main {
+            width: 100%;
             padding: 15px;
             margin-top: 20px;
+            background-color: #ff9f43;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .status-box {
+            background: #21262d;
+            padding: 12px;
+            border-left: 4px solid #58a6ff;
+            margin-top: 15px;
             border-radius: 8px;
-            min-height: 120px;
-            white-space: pre-line;
-            font-size: 14px;
-            line-height: 1.5;
-            color: #e6edf3;
+            font-size: 13px;
+            color: #c9d1d9;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Yala Tuteur 🎓</h1>
-    <div class="subtitle">Ton assistant scolaire intelligent et gratuit à tout moment</div>
+    <h1>Yala Creator 🎬</h1>
+    <div class="subtitle">Studio Manga & Générateur Intelligent (Étape 1)</div>
 
-    <label for="classSelect">1. Choisis ta classe / ton niveau :</label>
-    <select id="classSelect">
-        <option value="1ère année / Collège">1ère année / Collège</option>
-        <option value="2ème / 3ème année">2ème / 3ème année</option>
-        <option value="Humanités / Lycée">Humanités / Lycée</option>
+    <label for="promptInput">1. Idée de la scène ou Histoire Manga :</label>
+    <textarea id="promptInput" rows="3" placeholder="Ex: Simapinga Kasongo prépare sa plus grande attaque..."></textarea>
+
+    <label for="styleSelect">2. Choisis le style d'animation :</label>
+    <select id="styleSelect">
+        <option value="manga">Manga Action / Combat</option>
+        <option value="anime">Anime Coloré</option>
+        <option value="dark">Style Sombre / Peaky</option>
     </select>
 
-    <label for="questionInput">2. Pose ta question ou décris ton devoir :</label>
-    <textarea id="questionInput" placeholder="Ex: Explique-moi pourquoi on mesure le courant électrique en volts..."></textarea>
+    <button class="btn-main" onclick="genererManga()">🚀 Lancer la Génération</button>
 
-    <button class="btn-ask" onclick="askTutor()">💡 Demander l'explication au Prof</button>
+    <!-- Écran du Studio -->
+    <div class="player-box" id="playerBox">
+        <p style="color: #8b949e; text-align: center;">📺 Écran Télévision Studio<br><small>Le résultat s'affichera ici</small></p>
+    </div>
 
-    <label>3. Réponse et Explication du Professeur :</label>
-    <div class="response-box" id="responseBox">Bonjour ! Sélectionne ta classe, pose ta question sur un exercice ou une notion (comme l'électricité, les maths, etc.), et je t'expliquerai tout en détail.</div>
+    <div class="status-box" id="statusBox">
+        Statut : Squelette prêt. En attente de la deuxième étape !
+    </div>
 </div>
 
 <script>
-    function askTutor() {
-        const studentClass = document.getElementById('classSelect').value;
-        const question = document.getElementById('questionInput').value.trim();
-        const responseBox = document.getElementById('responseBox');
-
-        if (!question) {
-            responseBox.innerHTML = "⚠️ Veuillez d'abord écrire une question ou un sujet de devoir dans la zone ci-dessus.";
+    function genererManga() {
+        const text = document.getElementById('promptInput').value;
+        const statusBox = document.getElementById('statusBox');
+        if (!text) {
+            statusBox.innerHTML = "⚠️ Écris une histoire ou une idée d'abord !";
             return;
         }
-
-        responseBox.innerHTML = "⏳ Le professeur réfléchit et prépare l'explication pour ton niveau (" + studentClass + ")...";
-
-        // Simulation intelligente et pédagogique des réponses selon les thèmes fréquents
-        setTimeout(() => {
-            let answer = "";
-            const qLower = question.toLowerCase();
-
-            if (qLower.includes("volt") || qLower.includes("courant") || qLower.includes("electricite") || qLower.includes("électricité")) {
-                answer = `⚡ **Leçon d'Électricité (${studentClass}) :**\n\n`;
-                answer += `• **La tension (exprimée en Volts - V) :** C'est la "pression" ou la force qui pousse l'électricité (les électrons) à travers un fil.\n`;
-                answer += `• **Exemple simple :** Imagine de l'eau dans un tuyau. Le **Volt**, c'est la pression de l'eau. Plus il y a de volts, plus la "pression" électrique est forte !\n`;
-                answer += `• **Attention à ne pas confondre :** Le courant se mesure en *Ampères* (A), tandis que la pression de ce courant se mesure en *Volts* (V).`;
-            } else if (qLower.includes("math") || qLower.includes("equation") || qLower.includes("calcul")) {
-                answer = `📐 **Aide en Mathématiques (${studentClass}) :**\n\n`;
-                answer += `Pour ton exercice "${question}", voici la méthode pas à pas :\n`;
-                answer += `1. **Identifie les données** connues et ce qu'on te demande de trouver.\n`;
-                answer += `2. **Applique la formule** correspondante en remplaçant les lettres par les chiffres.\n`;
-                answer += `3. **Vérifie ton résultat** en faisant le calcul dans l'autre sens.\n\n`;
-                answer += `*Dis-moi si tu veux qu'on résolve un chiffre précis ensemble !*`;
-            } else {
-                answer = `📚 **Explication pour ton niveau (${studentClass}) :**\n\n`;
-                answer += `Tu as posé la question : *"${question}"*\n\n`;
-                answer += `Pour bien comprendre ce sujet, retiens ceci :\n`;
-                answer += `• C'est une notion essentielle qui relie la théorie à la pratique.\n`;
-                answer += `• **Conseil du prof :** Découpe toujours ton problème en petits morceaux faciles à comprendre.\n\n`;
-                answer += `*N'hésite pas à préciser ta question si tu veux un exemple plus détaillé !*`;
-            }
-
-            responseBox.innerHTML = answer;
-        }, 1000);
+        statusBox.innerHTML = "⚡ Interface prête ! Prochaine étape : connexion du moteur IA.";
     }
 </script>
 
