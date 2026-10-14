@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yala Creator - Studio Manga Pro</title>
+    <title>Yala Creator - Studio Manga & IA</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -55,7 +55,7 @@
         .btn-action {
             width: 100%;
             padding: 14px;
-            margin-top: 12px;
+            margin-top: 10px;
             border: none;
             border-radius: 10px;
             font-weight: bold;
@@ -63,9 +63,10 @@
             cursor: pointer;
             text-align: center;
         }
+        .btn-ai { background-color: #1e90ff; color: white; }
         .btn-upload { background-color: #8e44ad; color: white; }
         .btn-generate { background-color: #ff9f43; color: white; font-size: 16px; margin-top: 20px; }
-        .btn-download { background-color: #2ea043; color: white; display: none; text-decoration: none; box-sizing: border-box; margin-top: 12px; text-align: center; display: block; }
+        .btn-download { background-color: #2ea043; color: white; display: none; text-decoration: none; box-sizing: border-box; margin-top: 12px; text-align: center; }
         
         .tv-player {
             width: 100%;
@@ -100,10 +101,12 @@
 
 <div class="container">
     <h1>Yala Creator 🎬</h1>
-    <div class="subtitle">Studio Manga & Générateur (Étapes 2 & 3)</div>
+    <div class="subtitle">Studio Manga & IA Complete</div>
 
     <label for="promptInput">1. Scénario / Dialogue de la scène :</label>
-    <textarea id="promptInput" rows="2" placeholder="Ex: Combat intense dans l'arène..."></textarea>
+    <textarea id="promptInput" rows="2" placeholder="Ex: Simapinga Kasongo prépare son attaque ultime..."></textarea>
+    
+    <button class="btn-action btn-ai" onclick="genererScenarioIA()">🤖 Proposer un scénario par IA</button>
 
     <label>2. Importer l'image de ton Manga :</label>
     <button class="btn-action btn-upload" onclick="document.getElementById('mediaUpload').click()">📁 Choisir une image</button>
@@ -123,7 +126,7 @@
     <a id="downloadVideoBtn" class="btn-action btn-download">📥 Télécharger la Vidéo (.webm)</a>
 
     <div class="status-box" id="statusBox">
-        Statut : Studio prêt. Choisis ton image, écris ton texte et clique sur Créer.
+        Statut : Studio 100% prêt avec option IA !
     </div>
 </div>
 
@@ -134,9 +137,23 @@
     let mediaRecorder;
     let recordedChunks = [];
 
+    // Base de données d'idées de scénarios IA pour le manga
+    const scenariosIA = [
+        "Simapinga Kasongo libère sa force cachée : 'C'est ici que le combat commence !'",
+        "L'adversaire tremble de peur : 'Impossible... d'où vient une telle puissance ?'",
+        "Un coup de poing enflammé brise le sol en mille morceaux !",
+        "L'arène s'illumine sous un pouvoir légendaire inarrêtable !"
+    ];
+
+    function genererScenarioIA() {
+        const randomIndex = Math.floor(Math.random() * scenariosIA.length);
+        document.getElementById('promptInput').value = scenariosIA[randomIndex];
+        document.getElementById('statusBox').innerHTML = "🤖 Scénario généré par l'IA avec succès !";
+    }
+
     // Image d'attente par défaut
     let defaultImg = new Image();
-    defaultImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='350' fill='%23111'><rect width='600' height='350'/><text x='300' y='175' fill='%23ff9f43' font-family='Arial' font-size='16' text-anchor='middle'>Aucune image chargée</text></svg>";
+    defaultImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='350' fill='%23111'><rect width='600' height='350'/><text x='300' y='175' fill='%23ff9f43' font-family='Arial' font-size='16' text-anchor='middle'>Studio Yala Creator Prêt</text></svg>";
     defaultImg.onload = () => ctx.drawImage(defaultImg, 0, 0, canvas.width, canvas.height);
 
     function handleImageUpload(event) {
@@ -164,7 +181,7 @@
         const downloadBtn = document.getElementById('downloadVideoBtn');
 
         downloadBtn.style.display = "none";
-        statusBox.innerHTML = "⏳ Génération de l'animation en cours...";
+        statusBox.innerHTML = "⏳ Génération de la vidéo en cours...";
 
         const stream = canvas.captureStream(30);
         recordedChunks = [];
@@ -198,7 +215,7 @@
             if (elapsed < durationSec) {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-                // Effet de zoom dynamique façon CapCut
+                // Zoom dynamique CapCut
                 let scale = 1 + (elapsed * 0.03);
                 let w = canvas.width * scale;
                 let h = canvas.height * scale;
@@ -209,7 +226,7 @@
                 ctx.drawImage(imgToDraw, x, y, w, h);
                 ctx.restore();
 
-                // Bandeau sous-titre de l'histoire en bas
+                // Bandeau sous-titre
                 ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
                 ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
 
