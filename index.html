@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yala Creator - Studio Manga & IA</title>
+    <title>Yala Creator - Studio Manga Pro</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -26,11 +26,11 @@
             text-align: center;
             margin-top: 5px;
             margin-bottom: 5px;
-            font-size: 24px;
+            font-size: 22px;
         }
         .subtitle {
             text-align: center;
-            font-size: 13px;
+            font-size: 12px;
             color: #8b949e;
             margin-bottom: 20px;
         }
@@ -39,7 +39,7 @@
             margin-top: 15px;
             color: #ffa502;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
         }
         textarea, input, select {
             width: 100%;
@@ -52,30 +52,38 @@
             box-sizing: border-box;
             font-size: 14px;
         }
-        .player-box {
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            margin-top: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn-upload { background-color: #8e44ad; color: white; }
+        .btn-generate { background-color: #ff9f43; color: white; font-size: 16px; margin-top: 20px; }
+        .btn-download { background-color: #2ea043; color: white; display: none; text-decoration: none; box-sizing: border-box; margin-top: 12px; text-align: center; display: block; }
+        
+        .tv-player {
             width: 100%;
             height: 280px;
             background: #000;
             border: 3px solid #ff9f43;
             border-radius: 14px;
             margin-top: 20px;
+            position: relative;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
         }
-        .btn-main {
+        #animCanvas {
             width: 100%;
-            padding: 15px;
-            margin-top: 20px;
-            background-color: #ff9f43;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
+            height: 100%;
+            object-fit: contain;
         }
         .status-box {
             background: #21262d;
@@ -92,39 +100,131 @@
 
 <div class="container">
     <h1>Yala Creator 🎬</h1>
-    <div class="subtitle">Studio Manga & Générateur Intelligent (Étape 1)</div>
+    <div class="subtitle">Studio Manga & Générateur (Étapes 2 & 3)</div>
 
-    <label for="promptInput">1. Idée de la scène ou Histoire Manga :</label>
-    <textarea id="promptInput" rows="3" placeholder="Ex: Simapinga Kasongo prépare sa plus grande attaque..."></textarea>
+    <label for="promptInput">1. Scénario / Dialogue de la scène :</label>
+    <textarea id="promptInput" rows="2" placeholder="Ex: Combat intense dans l'arène..."></textarea>
 
-    <label for="styleSelect">2. Choisis le style d'animation :</label>
-    <select id="styleSelect">
-        <option value="manga">Manga Action / Combat</option>
-        <option value="anime">Anime Coloré</option>
-        <option value="dark">Style Sombre / Peaky</option>
-    </select>
+    <label>2. Importer l'image de ton Manga :</label>
+    <button class="btn-action btn-upload" onclick="document.getElementById('mediaUpload').click()">📁 Choisir une image</button>
+    <input type="file" id="mediaUpload" accept="image/*" style="display:none;" onchange="handleImageUpload(event)">
 
-    <button class="btn-main" onclick="genererManga()">🚀 Lancer la Génération</button>
+    <label for="durationInput">3. Durée de la séquence (secondes) :</label>
+    <input type="number" id="durationInput" min="3" max="15" value="6">
 
-    <!-- Écran du Studio -->
-    <div class="player-box" id="playerBox">
-        <p style="color: #8b949e; text-align: center;">📺 Écran Télévision Studio<br><small>Le résultat s'affichera ici</small></p>
+    <button class="btn-action btn-generate" onclick="lancerCreation()">▶️ Créer et Enregistrer la Vidéo</button>
+
+    <!-- Écran Télévision Studio -->
+    <div class="tv-player">
+        <canvas id="animCanvas" width="600" height="350"></canvas>
     </div>
 
+    <!-- Téléchargement de la vidéo -->
+    <a id="downloadVideoBtn" class="btn-action btn-download">📥 Télécharger la Vidéo (.webm)</a>
+
     <div class="status-box" id="statusBox">
-        Statut : Squelette prêt. En attente de la deuxième étape !
+        Statut : Studio prêt. Choisis ton image, écris ton texte et clique sur Créer.
     </div>
 </div>
 
 <script>
-    function genererManga() {
-        const text = document.getElementById('promptInput').value;
-        const statusBox = document.getElementById('statusBox');
-        if (!text) {
-            statusBox.innerHTML = "⚠️ Écris une histoire ou une idée d'abord !";
-            return;
+    const canvas = document.getElementById('animCanvas');
+    const ctx = canvas.getContext('2d');
+    let uploadedImage = null;
+    let mediaRecorder;
+    let recordedChunks = [];
+
+    // Image d'attente par défaut
+    let defaultImg = new Image();
+    defaultImg.src = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='350' fill='%23111'><rect width='600' height='350'/><text x='300' y='175' fill='%23ff9f43' font-family='Arial' font-size='16' text-anchor='middle'>Aucune image chargée</text></svg>";
+    defaultImg.onload = () => ctx.drawImage(defaultImg, 0, 0, canvas.width, canvas.height);
+
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    uploadedImage = img;
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+                    document.getElementById('statusBox').innerHTML = "✅ Image chargée avec succès !";
+                }
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
         }
-        statusBox.innerHTML = "⚡ Interface prête ! Prochaine étape : connexion du moteur IA.";
+    }
+
+    function lancerCreation() {
+        const text = document.getElementById('promptInput').value || "Yala Creator Studio";
+        const durationSec = parseInt(document.getElementById('durationInput').value) || 6;
+        const statusBox = document.getElementById('statusBox');
+        const downloadBtn = document.getElementById('downloadVideoBtn');
+
+        downloadBtn.style.display = "none";
+        statusBox.innerHTML = "⏳ Génération de l'animation en cours...";
+
+        const stream = canvas.captureStream(30);
+        recordedChunks = [];
+
+        try {
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm;codecs=vp9' });
+        } catch (e) {
+            try { mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' }); } 
+            catch (err) { mediaRecorder = new MediaRecorder(stream); }
+        }
+
+        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+
+        mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            downloadBtn.href = URL.createObjectURL(blob);
+            downloadBtn.download = "yala_manga_video.webm";
+            downloadBtn.style.display = "block";
+            statusBox.innerHTML = "🎉 Vidéo prête ! Clique sur le bouton vert pour la télécharger.";
+        };
+
+        mediaRecorder.start();
+
+        let startTime = null;
+        let imgToDraw = uploadedImage || defaultImg;
+
+        function renderFrame(timestamp) {
+            if (!startTime) startTime = timestamp;
+            let elapsed = (timestamp - startTime) / 1000;
+
+            if (elapsed < durationSec) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                // Effet de zoom dynamique façon CapCut
+                let scale = 1 + (elapsed * 0.03);
+                let w = canvas.width * scale;
+                let h = canvas.height * scale;
+                let x = (canvas.width - w) / 2;
+                let y = (canvas.height - h) / 2;
+
+                ctx.save();
+                ctx.drawImage(imgToDraw, x, y, w, h);
+                ctx.restore();
+
+                // Bandeau sous-titre de l'histoire en bas
+                ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
+                ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+
+                ctx.fillStyle = "#fffa65";
+                ctx.font = "bold 15px Arial";
+                ctx.textAlign = "center";
+                ctx.fillText(text, canvas.width / 2, canvas.height - 18);
+
+                requestAnimationFrame(renderFrame);
+            } else {
+                mediaRecorder.stop();
+            }
+        }
+
+        requestAnimationFrame(renderFrame);
     }
 </script>
 
