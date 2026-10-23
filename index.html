@@ -4,35 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ligue de Judoka</title>
-    <!-- On relie le fichier CSS -->
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- 1. LE DESIGN (CSS) DIRECTEMENT DANS INDEX.HTML -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        #jeu-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+        }
+
+        .zone-tatami {
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 85%;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            padding: 15px;
+            background-color: rgba(15, 23, 42, 0.6);
+            margin: 0 15px;
+        }
+
+        #nom-joueur {
+            font-size: 1.3rem;
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        #score {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #facc15;
+        }
+
+        #message-action {
+            font-size: 1rem;
+            color: #e2e8f0;
+            font-style: italic;
+            min-height: 40px;
+        }
+
+        #argent {
+            font-size: 1.1rem;
+            color: #4ade80;
+            font-weight: 600;
+        }
+
+        .commandes-gauche, .commandes-droite {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 25%;
+            max-width: 180px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 18px 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.95);
+            background: #1e40af;
+        }
+
+        #btn-patte {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+        }
+
+        #btn-patte:active {
+            background: #991b1b;
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Écran du Jeu en Mode Paysage -->
+    <!-- 2. LA STRUCTURE VISUELLE (HTML) -->
     <div id="jeu-container">
         
-        <!-- Côté Gauche : Main Gauche -->
+        <!-- Commandes Côté Gauche -->
         <div class="commandes-gauche">
-            <button id="btn-main-gauche">Main Gauche</button>
+            <button id="btn-main-gauche" onclick="actionMainGauche()">Main Gauche (Garde)</button>
         </div>
 
-        <!-- Centre : Tatami / Score / Infos -->
+        <!-- Tatami et Informations du Match -->
         <div class="zone-tatami">
             <h2 id="nom-joueur">Simapinga Kasongo</h2>
             <div id="score">0 - 0</div>
+            <div id="message-action">Appuie sur une touche pour combattre !</div>
             <div id="argent">Argent: 0 $</div>
         </div>
 
-        <!-- Côté Droit : Main Droite & Attaques -->
+        <!-- Commandes Côté Droit -->
         <div class="commandes-droite">
-            <button id="btn-main-droite">Main Droite</button>
-            <button id="btn-patte">Balayage</button>
+            <button id="btn-main-droite" onclick="actionMainDroite()">Main Droite (Saisie)</button>
+            <button id="btn-patte" onclick="actionBalayage()">Balayage (Pattes)</button>
         </div>
 
     </div>
 
-    <!-- On relie le fichier JavaScript -->
-    <script src="script.js"></script>
+    <!-- 3. LA LOGIQUE ET LES ACTIONS (JAVASCRIPT) -->
+    <script>
+        // Statistiques et profil du Joueur
+        let joueur = {
+            nom: "Simapinga Kasongo",
+            argent: 0,
+            conditionPhysique: 50
+        };
+
+        let scoreJoueur = 0;
+        let scoreAdversaire = 0;
+
+        // Fonction pour la Main Gauche
+        function actionMainGauche() {
+            document.getElementById("message-action").innerText = "Main gauche engagée : Prise du revers effectuée !";
+        }
+
+        // Fonction pour la Main Droite
+        function actionMainDroite() {
+            document.getElementById("message-action").innerText = "Main droite verrouillée : Contrôle du coude !";
+        }
+
+        // Fonction pour le Balayage
+        function actionBalayage() {
+            // Chance aléatoire de réussir l'attaque
+            let reussite = Math.random() > 0.4;
+
+            if (reussite) {
+                scoreJoueur += 1;
+                joueur.argent += 20; // Gain d'argent
+                document.getElementById("score").innerText = scoreJoueur + " - " + scoreAdversaire;
+                document.getElementById("argent").innerText = "Argent: " + joueur.argent + " $";
+                document.getElementById("message-action").innerText = "IPPON ! Magnifique balayage (+20 $)";
+            } else {
+                document.getElementById("message-action").innerText = "L'adversaire a esquivé le balayage !";
+            }
+        }
+    </script>
+
 </body>
 </html>
